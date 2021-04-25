@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "KcdnLeWa3J+tpElR/Np5kDXtGnQxEGnOYzHzuXm9aUT8rlYYGKP0GLlgPGVXf6els5Ygzp7S48x1EfqCYUus3A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\GS\\source\\repos\\IndeXAO\\IndeXAO\\IndeXAO.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.configuration\\5.0.0\\microsoft.extensions.configuration.5.0.0.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\5.0.0\\microsoft.extensions.configuration.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.configuration.fileextensions\\5.0.0\\microsoft.extensions.configuration.fileextensions.5.0.0.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.configuration.ini\\5.0.0\\microsoft.extensions.configuration.ini.5.0.0.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\5.0.0\\microsoft.extensions.fileproviders.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.fileproviders.physical\\5.0.0\\microsoft.extensions.fileproviders.physical.5.0.0.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.filesystemglobbing\\5.0.0\\microsoft.extensions.filesystemglobbing.5.0.0.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0\\microsoft.extensions.primitives.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
