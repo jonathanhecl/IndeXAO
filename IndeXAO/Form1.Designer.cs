@@ -37,24 +37,26 @@ namespace IndeXAO
             this.listGraficos = new System.Windows.Forms.ListView();
             this.lblIndice = new System.Windows.Forms.Label();
             this.txtVer = new System.Windows.Forms.TextBox();
-            this.lstIndices = new System.Windows.Forms.ListView();
+            this.lstIndices = new System.Windows.Forms.ListBox();
+            this.picImg = new System.Windows.Forms.PictureBox();
+            this.zoomBar = new System.Windows.Forms.TrackBar();
+            ((System.ComponentModel.ISupportInitialize)(this.picImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
             this.SuspendLayout();
             // 
             // txtGraficos
             // 
-            this.txtGraficos.Location = new System.Drawing.Point(184, 14);
-            this.txtGraficos.Margin = new System.Windows.Forms.Padding(4);
+            this.txtGraficos.Location = new System.Drawing.Point(153, 12);
             this.txtGraficos.Name = "txtGraficos";
             this.txtGraficos.ReadOnly = true;
-            this.txtGraficos.Size = new System.Drawing.Size(581, 35);
+            this.txtGraficos.Size = new System.Drawing.Size(485, 31);
             this.txtGraficos.TabIndex = 0;
             // 
             // cmdGraficos
             // 
-            this.cmdGraficos.Location = new System.Drawing.Point(13, 14);
-            this.cmdGraficos.Margin = new System.Windows.Forms.Padding(4);
+            this.cmdGraficos.Location = new System.Drawing.Point(11, 12);
             this.cmdGraficos.Name = "cmdGraficos";
-            this.cmdGraficos.Size = new System.Drawing.Size(163, 37);
+            this.cmdGraficos.Size = new System.Drawing.Size(136, 31);
             this.cmdGraficos.TabIndex = 1;
             this.cmdGraficos.Text = "Dir. &Gráficos";
             this.cmdGraficos.UseVisualStyleBackColor = true;
@@ -62,10 +64,9 @@ namespace IndeXAO
             // 
             // cmdIndice
             // 
-            this.cmdIndice.Location = new System.Drawing.Point(14, 59);
-            this.cmdIndice.Margin = new System.Windows.Forms.Padding(4);
+            this.cmdIndice.Location = new System.Drawing.Point(12, 49);
             this.cmdIndice.Name = "cmdIndice";
-            this.cmdIndice.Size = new System.Drawing.Size(163, 37);
+            this.cmdIndice.Size = new System.Drawing.Size(136, 31);
             this.cmdIndice.TabIndex = 3;
             this.cmdIndice.Text = "&Ind. Gráficos";
             this.cmdIndice.UseVisualStyleBackColor = true;
@@ -73,20 +74,18 @@ namespace IndeXAO
             // 
             // txtIndice
             // 
-            this.txtIndice.Location = new System.Drawing.Point(185, 59);
-            this.txtIndice.Margin = new System.Windows.Forms.Padding(4);
+            this.txtIndice.Location = new System.Drawing.Point(154, 49);
             this.txtIndice.Name = "txtIndice";
             this.txtIndice.ReadOnly = true;
-            this.txtIndice.Size = new System.Drawing.Size(580, 35);
+            this.txtIndice.Size = new System.Drawing.Size(484, 31);
             this.txtIndice.TabIndex = 2;
             // 
             // lblGraficos
             // 
             this.lblGraficos.AutoSize = true;
-            this.lblGraficos.Location = new System.Drawing.Point(773, 18);
-            this.lblGraficos.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblGraficos.Location = new System.Drawing.Point(644, 15);
             this.lblGraficos.Name = "lblGraficos";
-            this.lblGraficos.Size = new System.Drawing.Size(110, 30);
+            this.lblGraficos.Size = new System.Drawing.Size(95, 25);
             this.lblGraficos.TabIndex = 4;
             this.lblGraficos.Text = "Graficos: 0";
             // 
@@ -96,12 +95,11 @@ namespace IndeXAO
             this.listGraficos.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listGraficos.HideSelection = false;
             this.listGraficos.LabelWrap = false;
-            this.listGraficos.Location = new System.Drawing.Point(734, 113);
-            this.listGraficos.Margin = new System.Windows.Forms.Padding(4);
+            this.listGraficos.Location = new System.Drawing.Point(612, 94);
             this.listGraficos.MultiSelect = false;
             this.listGraficos.Name = "listGraficos";
             this.listGraficos.ShowGroups = false;
-            this.listGraficos.Size = new System.Drawing.Size(200, 406);
+            this.listGraficos.Size = new System.Drawing.Size(167, 339);
             this.listGraficos.TabIndex = 5;
             this.listGraficos.TileSize = new System.Drawing.Size(128, 32);
             this.listGraficos.UseCompatibleStateImageBehavior = false;
@@ -110,43 +108,55 @@ namespace IndeXAO
             // lblIndice
             // 
             this.lblIndice.AutoSize = true;
-            this.lblIndice.Location = new System.Drawing.Point(773, 62);
-            this.lblIndice.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblIndice.Location = new System.Drawing.Point(644, 52);
             this.lblIndice.Name = "lblIndice";
-            this.lblIndice.Size = new System.Drawing.Size(100, 30);
+            this.lblIndice.Size = new System.Drawing.Size(86, 25);
             this.lblIndice.TabIndex = 6;
             this.lblIndice.Text = "Indices: 0";
             // 
             // txtVer
             // 
-            this.txtVer.Location = new System.Drawing.Point(646, 113);
-            this.txtVer.Margin = new System.Windows.Forms.Padding(4);
+            this.txtVer.Location = new System.Drawing.Point(538, 94);
             this.txtVer.Name = "txtVer";
-            this.txtVer.Size = new System.Drawing.Size(81, 35);
+            this.txtVer.Size = new System.Drawing.Size(68, 31);
             this.txtVer.TabIndex = 7;
             // 
             // lstIndices
             // 
-            this.lstIndices.AutoArrange = false;
-            this.lstIndices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lstIndices.HideSelection = false;
-            this.lstIndices.LabelWrap = false;
-            this.lstIndices.Location = new System.Drawing.Point(15, 104);
-            this.lstIndices.Margin = new System.Windows.Forms.Padding(4);
-            this.lstIndices.MultiSelect = false;
+            this.lstIndices.FormattingEnabled = true;
+            this.lstIndices.ItemHeight = 25;
+            this.lstIndices.Location = new System.Drawing.Point(18, 98);
             this.lstIndices.Name = "lstIndices";
-            this.lstIndices.ShowGroups = false;
-            this.lstIndices.Size = new System.Drawing.Size(138, 406);
+            this.lstIndices.Size = new System.Drawing.Size(233, 329);
             this.lstIndices.TabIndex = 8;
-            this.lstIndices.TileSize = new System.Drawing.Size(128, 32);
-            this.lstIndices.UseCompatibleStateImageBehavior = false;
-            this.lstIndices.View = System.Windows.Forms.View.Tile;
+            this.lstIndices.SelectedIndexChanged += new System.EventHandler(this.lstIndices_SelectedIndexChanged);
+            // 
+            // picImg
+            // 
+            this.picImg.BackColor = System.Drawing.Color.Lime;
+            this.picImg.Location = new System.Drawing.Point(257, 98);
+            this.picImg.Name = "picImg";
+            this.picImg.Size = new System.Drawing.Size(275, 278);
+            this.picImg.TabIndex = 9;
+            this.picImg.TabStop = false;
+            // 
+            // zoomBar
+            // 
+            this.zoomBar.Location = new System.Drawing.Point(257, 382);
+            this.zoomBar.Minimum = 1;
+            this.zoomBar.Name = "zoomBar";
+            this.zoomBar.Size = new System.Drawing.Size(273, 69);
+            this.zoomBar.TabIndex = 10;
+            this.zoomBar.Value = 1;
+            this.zoomBar.Scroll += new System.EventHandler(this.zoomBar_Scroll);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(960, 540);
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.zoomBar);
+            this.Controls.Add(this.picImg);
             this.Controls.Add(this.lstIndices);
             this.Controls.Add(this.txtVer);
             this.Controls.Add(this.lblIndice);
@@ -157,12 +167,13 @@ namespace IndeXAO
             this.Controls.Add(this.cmdGraficos);
             this.Controls.Add(this.txtGraficos);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "IndeXAO";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.picImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -178,7 +189,9 @@ namespace IndeXAO
         private System.Windows.Forms.ListView listGraficos;
         private System.Windows.Forms.Label lblIndice;
         private System.Windows.Forms.TextBox txtVer;
-        private System.Windows.Forms.ListView lstIndices;
+        private System.Windows.Forms.ListBox lstIndices;
+        private System.Windows.Forms.PictureBox picImg;
+        private System.Windows.Forms.TrackBar zoomBar;
     }
 }
 

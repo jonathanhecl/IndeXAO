@@ -16,12 +16,6 @@ C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.dll
 C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\ref\IndeXAO.dll
 C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.pdb
 C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.genruntimeconfig.cache
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.Configuration.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.Configuration.Abstractions.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.Configuration.FileExtensions.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.Configuration.Ini.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.FileProviders.Abstractions.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.FileProviders.Physical.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.FileSystemGlobbing.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Microsoft.Extensions.Primitives.dll
 C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.csproj.CopyComplete
+C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\INIFileParser.dll
+C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.Properties.Resources.resources
