@@ -12,7 +12,6 @@ namespace IndeXAO
 {
     public partial class Form1 : Form
     {
-
         string ConfigFile = "config.ini";
         IniParser.Model.IniData ConfigINI = new IniParser.Model.IniData();
         string DirGraphics;
@@ -36,6 +35,9 @@ namespace IndeXAO
         public Form1()
         {
             InitializeComponent();
+            this.AllowDrop = true;
+            this.DragEnter += new DragEventHandler(grpBoxIndex_DragEnter);
+            this.DragDrop += new DragEventHandler(grpBoxIndex_DragDrop);
         }
 
         private void cmdGraficos_Click(object sender, EventArgs e)
@@ -228,10 +230,56 @@ namespace IndeXAO
         {
             int grhNumber = Convert.ToInt32(lstIndices.SelectedItem.ToString().Split("\t")[0]); 
             imgSelected = grhNumber;
+            numFrame = 0;
             LoadImg(grhNumber);
         }
 
         int imgSelected = 0;
+        int numFrame = 0;
+
+        private void LoadIndice(int grhNumber)
+        {
+            IndexStruct index = new IndexStruct();
+            foreach (IndexStruct i in indexList)
+            {
+                if (i.GrhNum == grhNumber)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            txtGrhNum.Text = grhNumber.ToString();
+            if (index.NumFrames == 1)
+            {
+                rdoStatic.Checked = true;
+                txtImageNum.Text = index.ImageNum.ToString();
+                txtPosX.Text = index.PosX.ToString();
+                txtPosY.Text = index.PosY.ToString();
+                txtWidth.Text = index.Width.ToString();
+                txtHeight.Text = index.Height.ToString();
+                string dirPath = ConfigINI["INIT"]["DirGraficos"];
+                string filePath = System.IO.Path.Combine(dirPath, index.ImageNum.ToString());
+                if (System.IO.File.Exists(filePath + ".png"))
+                    filePath += ".png";
+                else if (System.IO.File.Exists(filePath + ".png"))
+                    filePath += ".png";
+                else
+                    return;
+                Bitmap myImg = new Bitmap(filePath);
+                myImg.MakeTransparent();
+                picImage.SizeMode = PictureBoxSizeMode.Zoom;
+                picImage.Image = myImg;
+            } else if (index.NumFrames > 1)
+            {
+                rdoAnim.Checked = true;
+                lstFrames.Items.Clear();
+                foreach (int frame in index.Frames)
+                {
+                    lstFrames.Items.Add(frame.ToString());
+                }
+                txtSpeed.Text = index.Speed.ToString();
+            }
+        }
         private void LoadImg(int grhNumber)
         {
             IndexStruct index = new IndexStruct();
@@ -244,12 +292,14 @@ namespace IndeXAO
                 }
             }
 
+            /*
             if (picImg.Image != null)
             {
                 picImg.Image.Dispose();
                 picImg.Image = null;
                 picImg.Update();
             }
+            */
 
             string dirPath = ConfigINI["INIT"]["DirGraficos"];
 
@@ -265,56 +315,179 @@ namespace IndeXAO
                 Bitmap myImg = new Bitmap(filePath);
                 myImg.MakeTransparent();
                 var newImg = myImg.Clone(new Rectangle { X = index.PosX, Y = index.PosY, Width = index.Width, Height = index.Height }, myImg.PixelFormat);
-                if (picImg.Width < index.Width)
-                {
-                    index.Width = picImg.Width;
-                    index.Height = picImg.Height; // TODO: Falta formula
-                }
-                else if (picImg.Height < index.Height)
-                {
-                    index.Height = picImg.Height;
-                    index.Width = picImg.Width; // TODO: Falta formula
-                }
                 int newWidth = index.Width * zoomBar.Value;
                 int newHeight = index.Height * zoomBar.Value;
-                newImg = resizeImage(newImg, new Size(newWidth, newHeight));
+                newImg = new Bitmap(newImg, new Size(newWidth, newHeight));
+                if (newImg.Height > picImg.Height || newImg.Width > picImg.Width)
+                    picImg.SizeMode = PictureBoxSizeMode.Zoom;
+                else
+                    picImg.SizeMode = PictureBoxSizeMode.Normal;
                 picImg.Image = newImg;
+            } else if (index.NumFrames > 1)
+            {
+                var actualImg = imgSelected;
+                while(actualImg == imgSelected)
+                {
+                    if (numFrame >= index.NumFrames)
+                    {
+                        numFrame = 0;
+                    }
+                    LoadImg(index.Frames[numFrame]);
+                    numFrame++;
+                    System.Threading.Thread.Sleep(Convert.ToInt32(index.Speed)/2);
+                    Application.DoEvents();
+                };
             }
         }
 
-        private static System.Drawing.Bitmap resizeImage(System.Drawing.Image imgToResize, Size size)
-        {
-            //Get the image current width  
-            int sourceWidth = imgToResize.Width;
-            //Get the image current height  
-            int sourceHeight = imgToResize.Height;
-            float nPercent = 0;
-            float nPercentW = 0;
-            float nPercentH = 0;
-            //Calulate  width with new desired size  
-            nPercentW = ((float)size.Width / (float)sourceWidth);
-            //Calculate height with new desired size  
-            nPercentH = ((float)size.Height / (float)sourceHeight);
-            if (nPercentH < nPercentW)
-                nPercent = nPercentH;
-            else
-                nPercent = nPercentW;
-            //New Width  
-            int destWidth = (int)(sourceWidth * nPercent);
-            //New Height  
-            int destHeight = (int)(sourceHeight * nPercent);
-            Bitmap b = new Bitmap(destWidth, destHeight);
-            Graphics g = Graphics.FromImage((System.Drawing.Image)b);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
-            // Draw image with new width and height  
-            g.DrawImage(imgToResize, 0, 0, destWidth, destHeight);
-            g.Dispose();
-            return (System.Drawing.Bitmap)b;
-        }
 
         private void zoomBar_Scroll(object sender, EventArgs e)
         {
             LoadImg(imgSelected);
+        }
+
+        private void cmdCambiarFondo_Click(object sender, EventArgs e)
+        {
+            var nc = new ColorDialog();
+            nc.ShowDialog();
+            picImg.BackColor = nc.Color;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            imgSelected = -1;
+        }
+
+        private void rdoAnim_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdoAnim.Checked)
+            {
+                rdoStatic.Checked = false;
+                label1.Visible = false;
+                label2.Visible = false;
+                label3.Visible = false;
+                label4.Visible = false;
+                label5.Visible = false;
+                txtImageNum.Visible = false;
+                txtPosX.Visible = false;
+                txtPosY.Visible = false;
+                txtWidth.Visible = false;
+                txtHeight.Visible = false;
+                label6.Visible = true;
+                label7.Visible = true;
+                lstFrames.Visible = true;
+                txtGrh.Visible = true;
+                cmdAdd.Visible = true;
+                cmdRemove.Visible = true;
+                txtSpeed.Visible = true;
+            }
+        }
+
+        private void rdoStatic_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdoStatic.Checked)
+            {
+                rdoAnim.Checked = false;
+                label1.Visible = true;
+                label2.Visible = true;
+                label3.Visible = true;
+                label4.Visible = true;
+                label5.Visible = true;
+                txtImageNum.Visible = true;
+                txtPosX.Visible = true;
+                txtPosY.Visible = true;
+                txtWidth.Visible = true;
+                txtHeight.Visible = true;
+                label6.Visible = false;
+                label7.Visible = false;
+                lstFrames.Visible = false;
+                txtGrh.Visible = false;
+                cmdAdd.Visible = false;
+                cmdRemove.Visible = false;
+                txtSpeed.Visible = false;
+            }
+        }
+
+        private void grpBoxIndex_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void grpBoxIndex_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        private void grpBoxIndex_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length > 0) {
+                var ext = System.IO.Path.GetExtension(files[0]);
+                if (ext == ".bmp" || ext == ".png")
+                {
+                    var filename = System.IO.Path.GetFileNameWithoutExtension(files[0]);
+                    bool isNumeric = int.TryParse(filename, out _);
+                    if (isNumeric)
+                    {
+                        txtImageNum.Text = filename;
+                        string dirPath = ConfigINI["INIT"]["DirGraficos"];
+                        string filePath = System.IO.Path.Combine(dirPath, txtImageNum.Text);
+                        if (System.IO.File.Exists(filePath + ".png"))
+                            filePath += ".png";
+                        else if (System.IO.File.Exists(filePath + ".png"))
+                            filePath += ".png";
+                        else
+                            return;
+                        Bitmap myImg = new Bitmap(filePath);
+                        myImg.MakeTransparent();
+                        picImage.SizeMode = PictureBoxSizeMode.Zoom;
+                        picImage.Image = myImg;
+                    }                    
+                }
+            }
+        }
+
+        private void cmdRemove_Click(object sender, EventArgs e)
+        {
+            lstFrames.Items.Remove(lstFrames.SelectedItem);
+        }
+
+        private void cmdAdd_Click(object sender, EventArgs e)
+        {
+            bool isNumeric = int.TryParse(txtGrh.Text, out _);
+            if (isNumeric)
+            {
+                lstFrames.Items.Add(txtGrh.Text);
+            }
+        }
+
+        private void cmdEditGrh_Click(object sender, EventArgs e)
+        {
+            LoadIndice(imgSelected);
+        }
+
+        private void cmdAplicarIndice_Click(object sender, EventArgs e)
+        {
+            int grhNumber;
+            bool isNumeric = int.TryParse(txtGrhNum.Text, out grhNumber);
+            if (isNumeric)
+            {
+                foreach (IndexStruct i in indexList)
+                {
+                    if (i.GrhNum == grhNumber)
+                    {
+                        i.NumFrames = 0;
+                        i.Frames = new int[0];
+                        i.Speed = 0;
+                        i.ImageNum = 0;
+                        i.PosX = 0;
+                        i.PosY = 0;
+                        i.Width = 0;
+                        i.Height = 0;
+                        break;
+                    }
+                }
+            }
         }
     }
 }
