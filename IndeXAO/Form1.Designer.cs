@@ -29,6 +29,7 @@ namespace IndeXAO
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.txtGraficos = new System.Windows.Forms.TextBox();
             this.cmdGraficos = new System.Windows.Forms.Button();
             this.cmdIndice = new System.Windows.Forms.Button();
@@ -42,15 +43,14 @@ namespace IndeXAO
             this.zoomBar = new System.Windows.Forms.TrackBar();
             this.cmdCambiarFondo = new System.Windows.Forms.Button();
             this.grpBoxIndex = new System.Windows.Forms.GroupBox();
+            this.cmdDown = new System.Windows.Forms.Button();
+            this.cmdUp = new System.Windows.Forms.Button();
             this.txtGrhNum = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.cmdAplicarIndice = new System.Windows.Forms.Button();
             this.txtSpeed = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.cmdRemove = new System.Windows.Forms.Button();
-            this.cmdAdd = new System.Windows.Forms.Button();
-            this.txtGrh = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.lstFrames = new System.Windows.Forms.ListBox();
             this.picImage = new System.Windows.Forms.PictureBox();
             this.txtHeight = new System.Windows.Forms.TextBox();
@@ -65,7 +65,9 @@ namespace IndeXAO
             this.label1 = new System.Windows.Forms.Label();
             this.rdoStatic = new System.Windows.Forms.RadioButton();
             this.rdoAnim = new System.Windows.Forms.RadioButton();
+            this.cmdAdd = new System.Windows.Forms.Button();
             this.cmdEditGrh = new System.Windows.Forms.Button();
+            this.timerAnim = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.picImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
             this.grpBoxIndex.SuspendLayout();
@@ -201,15 +203,14 @@ namespace IndeXAO
             // 
             // grpBoxIndex
             // 
+            this.grpBoxIndex.Controls.Add(this.cmdDown);
+            this.grpBoxIndex.Controls.Add(this.cmdUp);
             this.grpBoxIndex.Controls.Add(this.txtGrhNum);
             this.grpBoxIndex.Controls.Add(this.label8);
             this.grpBoxIndex.Controls.Add(this.cmdAplicarIndice);
             this.grpBoxIndex.Controls.Add(this.txtSpeed);
             this.grpBoxIndex.Controls.Add(this.label7);
             this.grpBoxIndex.Controls.Add(this.cmdRemove);
-            this.grpBoxIndex.Controls.Add(this.cmdAdd);
-            this.grpBoxIndex.Controls.Add(this.txtGrh);
-            this.grpBoxIndex.Controls.Add(this.label6);
             this.grpBoxIndex.Controls.Add(this.lstFrames);
             this.grpBoxIndex.Controls.Add(this.picImage);
             this.grpBoxIndex.Controls.Add(this.txtHeight);
@@ -233,6 +234,28 @@ namespace IndeXAO
             this.grpBoxIndex.DragDrop += new System.Windows.Forms.DragEventHandler(this.grpBoxIndex_DragDrop);
             this.grpBoxIndex.DragEnter += new System.Windows.Forms.DragEventHandler(this.grpBoxIndex_DragEnter);
             this.grpBoxIndex.Enter += new System.EventHandler(this.grpBoxIndex_Enter);
+            // 
+            // cmdDown
+            // 
+            this.cmdDown.Location = new System.Drawing.Point(245, 116);
+            this.cmdDown.Name = "cmdDown";
+            this.cmdDown.Size = new System.Drawing.Size(65, 33);
+            this.cmdDown.TabIndex = 24;
+            this.cmdDown.Text = "&Bajar";
+            this.cmdDown.UseVisualStyleBackColor = true;
+            this.cmdDown.Visible = false;
+            this.cmdDown.Click += new System.EventHandler(this.cmdDown_Click);
+            // 
+            // cmdUp
+            // 
+            this.cmdUp.Location = new System.Drawing.Point(170, 116);
+            this.cmdUp.Name = "cmdUp";
+            this.cmdUp.Size = new System.Drawing.Size(65, 33);
+            this.cmdUp.TabIndex = 23;
+            this.cmdUp.Text = "&Subir";
+            this.cmdUp.UseVisualStyleBackColor = true;
+            this.cmdUp.Visible = false;
+            this.cmdUp.Click += new System.EventHandler(this.cmdUp_Click);
             // 
             // txtGrhNum
             // 
@@ -281,43 +304,14 @@ namespace IndeXAO
             // 
             // cmdRemove
             // 
-            this.cmdRemove.Location = new System.Drawing.Point(242, 116);
+            this.cmdRemove.Location = new System.Drawing.Point(170, 86);
             this.cmdRemove.Name = "cmdRemove";
-            this.cmdRemove.Size = new System.Drawing.Size(68, 33);
+            this.cmdRemove.Size = new System.Drawing.Size(140, 32);
             this.cmdRemove.TabIndex = 17;
-            this.cmdRemove.Text = "-";
+            this.cmdRemove.Text = "&Remover";
             this.cmdRemove.UseVisualStyleBackColor = true;
             this.cmdRemove.Visible = false;
             this.cmdRemove.Click += new System.EventHandler(this.cmdRemove_Click);
-            // 
-            // cmdAdd
-            // 
-            this.cmdAdd.Location = new System.Drawing.Point(170, 116);
-            this.cmdAdd.Name = "cmdAdd";
-            this.cmdAdd.Size = new System.Drawing.Size(66, 33);
-            this.cmdAdd.TabIndex = 16;
-            this.cmdAdd.Text = "+";
-            this.cmdAdd.UseVisualStyleBackColor = true;
-            this.cmdAdd.Visible = false;
-            this.cmdAdd.Click += new System.EventHandler(this.cmdAdd_Click);
-            // 
-            // txtGrh
-            // 
-            this.txtGrh.Location = new System.Drawing.Point(208, 83);
-            this.txtGrh.Name = "txtGrh";
-            this.txtGrh.Size = new System.Drawing.Size(102, 27);
-            this.txtGrh.TabIndex = 15;
-            this.txtGrh.Visible = false;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(170, 86);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(32, 20);
-            this.label6.TabIndex = 14;
-            this.label6.Text = "Grh";
-            this.label6.Visible = false;
             // 
             // lstFrames
             // 
@@ -443,15 +437,29 @@ namespace IndeXAO
             this.rdoAnim.UseVisualStyleBackColor = true;
             this.rdoAnim.CheckedChanged += new System.EventHandler(this.rdoAnim_CheckedChanged);
             // 
+            // cmdAdd
+            // 
+            this.cmdAdd.Location = new System.Drawing.Point(120, 507);
+            this.cmdAdd.Name = "cmdAdd";
+            this.cmdAdd.Size = new System.Drawing.Size(66, 33);
+            this.cmdAdd.TabIndex = 16;
+            this.cmdAdd.Text = "&Añadir";
+            this.cmdAdd.UseVisualStyleBackColor = true;
+            this.cmdAdd.Click += new System.EventHandler(this.cmdAdd_Click);
+            // 
             // cmdEditGrh
             // 
             this.cmdEditGrh.Location = new System.Drawing.Point(16, 507);
             this.cmdEditGrh.Name = "cmdEditGrh";
-            this.cmdEditGrh.Size = new System.Drawing.Size(170, 34);
+            this.cmdEditGrh.Size = new System.Drawing.Size(103, 34);
             this.cmdEditGrh.TabIndex = 14;
-            this.cmdEditGrh.Text = "&Editar selecionado";
+            this.cmdEditGrh.Text = "&Editar";
             this.cmdEditGrh.UseVisualStyleBackColor = true;
             this.cmdEditGrh.Click += new System.EventHandler(this.cmdEditGrh_Click);
+            // 
+            // timerAnim
+            // 
+            this.timerAnim.Tick += new System.EventHandler(this.timerAnim_Tick);
             // 
             // Form1
             // 
@@ -464,6 +472,7 @@ namespace IndeXAO
             this.Controls.Add(this.zoomBar);
             this.Controls.Add(this.picImg);
             this.Controls.Add(this.lstIndices);
+            this.Controls.Add(this.cmdAdd);
             this.Controls.Add(this.txtVer);
             this.Controls.Add(this.lblIndice);
             this.Controls.Add(this.listGraficos);
@@ -522,8 +531,6 @@ namespace IndeXAO
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox picImage;
         private System.Windows.Forms.ListBox lstFrames;
-        private System.Windows.Forms.TextBox txtGrh;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button cmdRemove;
         private System.Windows.Forms.Button cmdAdd;
         private System.Windows.Forms.TextBox txtSpeed;
@@ -532,6 +539,9 @@ namespace IndeXAO
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtGrhNum;
         private System.Windows.Forms.Button cmdEditGrh;
+        private System.Windows.Forms.Timer timerAnim;
+        private System.Windows.Forms.Button cmdDown;
+        private System.Windows.Forms.Button cmdUp;
     }
 }
 

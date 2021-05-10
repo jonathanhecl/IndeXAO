@@ -228,14 +228,23 @@ namespace IndeXAO
 
         private void lstIndices_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int grhNumber = Convert.ToInt32(lstIndices.SelectedItem.ToString().Split("\t")[0]); 
+            int grhNumber = Convert.ToInt32(lstIndices.SelectedItem.ToString().Split("\t")[0]);
+            if (picImg.Image != null)
+            {
+                picImg.Image.Dispose();
+                picImg.Image = null;
+                picImg.Update();
+            }
             imgSelected = grhNumber;
             numFrame = 0;
             LoadImg(grhNumber);
         }
 
+        string cacheFile;
+        Bitmap cacheImage;
         int imgSelected = 0;
         int numFrame = 0;
+
 
         private void LoadIndice(int grhNumber)
         {
@@ -259,16 +268,21 @@ namespace IndeXAO
                 txtHeight.Text = index.Height.ToString();
                 string dirPath = ConfigINI["INIT"]["DirGraficos"];
                 string filePath = System.IO.Path.Combine(dirPath, index.ImageNum.ToString());
-                if (System.IO.File.Exists(filePath + ".png"))
-                    filePath += ".png";
+                if (System.IO.File.Exists(filePath + ".bmp"))
+                    filePath += ".bmp";
                 else if (System.IO.File.Exists(filePath + ".png"))
                     filePath += ".png";
                 else
                     return;
-                Bitmap myImg = new Bitmap(filePath);
-                myImg.MakeTransparent();
+                if(cacheFile != filePath)
+                {
+                    Bitmap myImg = new Bitmap(filePath);
+                    myImg.MakeTransparent();
+                    cacheImage = myImg;
+                    cacheFile = filePath;
+                }                
                 picImage.SizeMode = PictureBoxSizeMode.Zoom;
-                picImage.Image = myImg;
+                picImage.Image = cacheImage;
             } else if (index.NumFrames > 1)
             {
                 rdoAnim.Checked = true;
@@ -292,29 +306,25 @@ namespace IndeXAO
                 }
             }
 
-            /*
-            if (picImg.Image != null)
-            {
-                picImg.Image.Dispose();
-                picImg.Image = null;
-                picImg.Update();
-            }
-            */
-
             string dirPath = ConfigINI["INIT"]["DirGraficos"];
 
             if (index.NumFrames == 1)
             {
                 string filePath = System.IO.Path.Combine(dirPath, index.ImageNum.ToString());
-                if (System.IO.File.Exists(filePath + ".png"))
-                    filePath += ".png";
+                if (System.IO.File.Exists(filePath + ".bmp"))
+                    filePath += ".bmp";
                 else if (System.IO.File.Exists(filePath + ".png"))
                     filePath += ".png";
                 else
                     return;
-                Bitmap myImg = new Bitmap(filePath);
-                myImg.MakeTransparent();
-                var newImg = myImg.Clone(new Rectangle { X = index.PosX, Y = index.PosY, Width = index.Width, Height = index.Height }, myImg.PixelFormat);
+                if (cacheFile != filePath)
+                {
+                    Bitmap myImg = new Bitmap(filePath);
+                    myImg.MakeTransparent();
+                    cacheImage = myImg;
+                    cacheFile = filePath;
+                }
+                var newImg = cacheImage.Clone(new Rectangle { X = index.PosX, Y = index.PosY, Width = index.Width, Height = index.Height }, cacheImage.PixelFormat);
                 int newWidth = index.Width * zoomBar.Value;
                 int newHeight = index.Height * zoomBar.Value;
                 newImg = new Bitmap(newImg, new Size(newWidth, newHeight));
@@ -325,21 +335,16 @@ namespace IndeXAO
                 picImg.Image = newImg;
             } else if (index.NumFrames > 1)
             {
-                var actualImg = imgSelected;
-                while(actualImg == imgSelected)
-                {
-                    if (numFrame >= index.NumFrames)
-                    {
-                        numFrame = 0;
-                    }
-                    LoadImg(index.Frames[numFrame]);
-                    numFrame++;
-                    System.Threading.Thread.Sleep(Convert.ToInt32(index.Speed)/2);
-                    Application.DoEvents();
-                };
+                timerAnim.Enabled = false;
+                timerAnim.Tag = imgSelected;
+                int speed = Convert.ToInt32(index.Speed);
+                if (speed <= 10)
+                    speed = speed * 200;
+                speed = speed / 2;
+                timerAnim.Interval = speed;
+                timerAnim.Enabled = true;
             }
         }
-
 
         private void zoomBar_Scroll(object sender, EventArgs e)
         {
@@ -373,13 +378,13 @@ namespace IndeXAO
                 txtPosY.Visible = false;
                 txtWidth.Visible = false;
                 txtHeight.Visible = false;
-                label6.Visible = true;
                 label7.Visible = true;
                 lstFrames.Visible = true;
-                txtGrh.Visible = true;
-                cmdAdd.Visible = true;
+                cmdAdd.Enabled = true;
                 cmdRemove.Visible = true;
                 txtSpeed.Visible = true;
+                cmdUp.Visible = true;
+                cmdDown.Visible = true;
             }
         }
 
@@ -398,13 +403,13 @@ namespace IndeXAO
                 txtPosY.Visible = true;
                 txtWidth.Visible = true;
                 txtHeight.Visible = true;
-                label6.Visible = false;
                 label7.Visible = false;
                 lstFrames.Visible = false;
-                txtGrh.Visible = false;
-                cmdAdd.Visible = false;
+                cmdAdd.Enabled = false;
                 cmdRemove.Visible = false;
                 txtSpeed.Visible = false;
+                cmdUp.Visible = false;
+                cmdDown.Visible = false;
             }
         }
 
@@ -432,8 +437,8 @@ namespace IndeXAO
                         txtImageNum.Text = filename;
                         string dirPath = ConfigINI["INIT"]["DirGraficos"];
                         string filePath = System.IO.Path.Combine(dirPath, txtImageNum.Text);
-                        if (System.IO.File.Exists(filePath + ".png"))
-                            filePath += ".png";
+                        if (System.IO.File.Exists(filePath + ".bmp"))
+                            filePath += ".bmp";
                         else if (System.IO.File.Exists(filePath + ".png"))
                             filePath += ".png";
                         else
@@ -449,16 +454,21 @@ namespace IndeXAO
 
         private void cmdRemove_Click(object sender, EventArgs e)
         {
+            int prevIndex = lstFrames.SelectedIndex;
             lstFrames.Items.Remove(lstFrames.SelectedItem);
+            if (prevIndex==lstFrames.Items.Count) {
+                if (prevIndex == 0)
+                    return;
+                lstFrames.SelectedIndex = prevIndex - 1;
+            } else
+            {
+                lstFrames.SelectedIndex = prevIndex;
+            }
         }
 
         private void cmdAdd_Click(object sender, EventArgs e)
         {
-            bool isNumeric = int.TryParse(txtGrh.Text, out _);
-            if (isNumeric)
-            {
-                lstFrames.Items.Add(txtGrh.Text);
-            }
+           lstFrames.Items.Add(imgSelected);
         }
 
         private void cmdEditGrh_Click(object sender, EventArgs e)
@@ -484,10 +494,101 @@ namespace IndeXAO
                         i.PosY = 0;
                         i.Width = 0;
                         i.Height = 0;
+                        if(rdoStatic.Checked)
+                        {
+                            int imageNum;
+                            int.TryParse(txtImageNum.Text, out imageNum);
+                            if (imageNum > 0)
+                            {
+                                i.NumFrames = 1;
+                                i.ImageNum = imageNum;
+                                int posX;
+                                int.TryParse(txtPosX.Text, out posX);
+                                i.PosX = posX;
+                                int posY;
+                                int.TryParse(txtPosY.Text, out posY);
+                                i.PosY = posY;
+                                int width;
+                                int.TryParse(txtWidth.Text, out width);
+                                i.Width = width;
+                                int height;
+                                int.TryParse(txtHeight.Text, out height);
+                                i.Height = height;
+                            }
+                        } else if(rdoAnim.Checked)
+                        {
+                            int numFrames = lstFrames.Items.Count;
+                            if (numFrames > 0 )
+                            {
+                                i.NumFrames = numFrames;
+                                i.Frames = new int[numFrames];
+                                int n = 0;
+                                do
+                                {
+                                    int grh;
+                                    int.TryParse(lstFrames.Items[n].ToString(), out grh);
+                                    i.Frames[n] = grh;
+                                    n++;
+                                } while (n < numFrames);
+                                int speed;
+                                int.TryParse(txtSpeed.Text, out speed);
+                                i.Speed = speed;
+                            }
+                        }
+                        LoadImg(imgSelected);
                         break;
                     }
                 }
             }
+        }
+
+        private void timerAnim_Tick(object sender, EventArgs e)
+        {
+            
+            int actualGrh = Convert.ToInt32(timerAnim.Tag);
+            if (actualGrh != imgSelected) {
+                timerAnim.Enabled = false;
+                return;
+            }
+            IndexStruct index = new IndexStruct();
+            foreach (IndexStruct i in indexList)
+            {
+                if (i.GrhNum == actualGrh)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            if (numFrame >= index.NumFrames)
+            {
+                numFrame = 0;
+            }
+            if (index.NumFrames == 0)
+                return;
+            LoadImg(index.Frames[numFrame]);
+            numFrame++;
+        }
+
+        private void cmdUp_Click(object sender, EventArgs e)
+        {
+            int prevIndex = lstFrames.SelectedIndex;
+            if (prevIndex == 0)
+                return;
+            object item = lstFrames.SelectedItem;
+            lstFrames.Items.Remove(item);
+            lstFrames.Items.Insert(prevIndex-1,item);
+            lstFrames.SelectedIndex = prevIndex-1;
+        }
+
+        private void cmdDown_Click(object sender, EventArgs e)
+        {
+            int prevIndex = lstFrames.SelectedIndex;
+            if (prevIndex == lstFrames.Items.Count-1)
+                return;
+            object item = lstFrames.SelectedItem;
+            lstFrames.Items.Remove(item);
+            lstFrames.Items.Insert(prevIndex + 1, item);
+            lstFrames.SelectedIndex = prevIndex + 1;
         }
     }
 }
