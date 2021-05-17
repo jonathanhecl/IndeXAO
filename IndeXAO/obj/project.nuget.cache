@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "WzIO48RxUQ1zT4AAZPYsv2Vg+ymHXZXGpOiAJjjjsjS/zqtk5I4EKNi+RZ1kQMXVQcPj30oCe2UfaMphHUZl2Q==",
+  "dgSpecHash": "1S/JvsrSNaiXSYcnnwIR2Ob9kXd+REN5VBuDs1xZj2kCpuD9Lfz/TFzuuni9hAnx+UAq+dD9rPfKL7NsK2dVfA==",
   "success": true,
   "projectFilePath": "C:\\Users\\GS\\source\\repos\\IndeXAO\\IndeXAO\\IndeXAO.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\GS\\.nuget\\packages\\ini-parser-netstandard\\2.5.2\\ini-parser-netstandard.2.5.2.nupkg.sha512"
+    "C:\\Users\\GS\\.nuget\\packages\\ini-parser-netstandard\\2.5.2\\ini-parser-netstandard.2.5.2.nupkg.sha512",
+    "C:\\Users\\GS\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []
 }

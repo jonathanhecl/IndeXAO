@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace IndeXAO
         string DirGraphics;
         string FileIndex;
 
+        int MaxGrh;
         public class IndexStruct
         {
             public int GrhNum { get; set; }
@@ -31,6 +33,13 @@ namespace IndeXAO
         }
 
         List<IndexStruct> indexList = new List<IndexStruct>();
+
+        public class MainJsonStruct
+        {
+            public int MaxGrh;
+            public int Version;
+            public List<IndexStruct> Graphics = new List<IndexStruct>();
+        }
 
         public Form1()
         {
@@ -137,6 +146,7 @@ namespace IndeXAO
                 var maxGrh = new byte[4];
                 fileMemory.Read(maxGrh, 0, (int)maxGrh.Length);
                 lblIndice.Text = "Indices: " + BitConverter.ToInt32(maxGrh).ToString();
+                MaxGrh = BitConverter.ToInt32(maxGrh);
 
                 bool exit = false;
                 
@@ -196,12 +206,85 @@ namespace IndeXAO
                         indexList.Add(newIndex);
                     }
                 } while (!exit || fileMemory.Position > fileMemory.Length);
-            } else if (name.EndsWith(".ini"))
+            } else if (name.EndsWith(".json"))
             {
-                MessageBox.Show("Es indice ini");
+                MessageBox.Show("Es indice json");
             } else
             {
-                //
+                var parser = new IniParser.FileIniDataParser();
+                IniParser.Model.IniData IndINI = new IniParser.Model.IniData();
+                IndINI = parser.ReadFile(filepath);
+                MaxGrh = Convert.ToInt32(IndINI["INIT"]["NumGrh"]);
+                lblIndice.Text = "Indices: " + MaxGrh.ToString();
+                txtVer.Text = IndINI["INIT"]["Version"];
+                for (int i = 0; i <= MaxGrh; i++)
+                {
+                    if (IndINI["Graphics"]["Grh" + i.ToString()] != null)
+                    {
+                        IndexStruct newIndex = new IndexStruct();
+                        string grhLine = IndINI["Graphics"]["Grh" + i.ToString()];
+                        if (!grhLine.Contains("-"))
+                            continue;
+                        string[] grhSplit = grhLine.Split("-");
+                        if (grhSplit[0] == "" || grhSplit[0] == "0")
+                            continue;
+                        else if (grhSplit[0] == "1")
+                        {
+                            if (grhSplit.Length != 6)
+                                continue;
+                            newIndex.NumFrames = 1;
+                            newIndex.ImageNum = Convert.ToInt32(grhSplit[1]);
+                            newIndex.PosX = Convert.ToInt32(grhSplit[2]);
+                            newIndex.PosY = Convert.ToInt32(grhSplit[3]);
+                            newIndex.Width = Convert.ToInt32(grhSplit[4]);
+                            newIndex.Height = Convert.ToInt32(grhSplit[5]);
+                        } else
+                        {
+                            int maxFrames = Convert.ToInt32(grhSplit[0]);
+                            if (grhSplit.Length != maxFrames + 2)
+                                continue;
+                            newIndex.NumFrames = maxFrames;
+                            newIndex.Frames = new int[maxFrames];
+                            int f = 0;
+                            do
+                            {
+                                newIndex.Frames[f] = Convert.ToInt32(grhSplit[f+1]);
+                                f++;
+                            } while (f < maxFrames);
+                            newIndex.Speed = Convert.ToSingle(grhSplit[maxFrames + 1]);
+                        }
+                        newIndex.GrhNum = i;
+                        indexList.Add(newIndex);
+                    }
+                }
+                /*
+                foreach (IndexStruct i in indexList)
+                {
+                    string grhLine = "";
+                    if (i.NumFrames > 0)
+                    {
+                        if (i.NumFrames > 1)
+                        {
+                            grhLine = i.Frames.Length.ToString() + "-";
+                            for (int t = 0; t < i.NumFrames; t++)
+                            {
+                                grhLine += i.Frames[t].ToString() + "-";
+                            }
+                            grhLine += i.Speed.ToString();
+                        }
+                        else
+                        {
+                            grhLine = i.NumFrames.ToString() + "-";
+                            grhLine += i.ImageNum.ToString() + "-";
+                            grhLine += i.PosX.ToString() + "-";
+                            grhLine += i.PosY.ToString() + "-";
+                            grhLine += i.Width.ToString() + "-";
+                            grhLine += i.Height.ToString();
+                        }
+                    }
+                    IndINI["Graphics"]["Grh" + i.GrhNum.ToString()] = grhLine;
+                }
+                */
             }
 
             lstIndices.BeginUpdate();
@@ -341,6 +424,8 @@ namespace IndeXAO
                 if (speed <= 10)
                     speed = speed * 200;
                 speed = speed / 2;
+                if (speed<=0)
+                    speed = 1;
                 timerAnim.Interval = speed;
                 timerAnim.Enabled = true;
             }
@@ -530,8 +615,9 @@ namespace IndeXAO
                                     i.Frames[n] = grh;
                                     n++;
                                 } while (n < numFrames);
-                                int speed;
-                                int.TryParse(txtSpeed.Text, out speed);
+                                Single speed;
+                                txtSpeed.Text = txtSpeed.Text.Replace(".", ","); // Fix comma
+                                float.TryParse(txtSpeed.Text, out speed);
                                 i.Speed = speed;
                             }
                         }
@@ -589,6 +675,110 @@ namespace IndeXAO
             lstFrames.Items.Remove(item);
             lstFrames.Items.Insert(prevIndex + 1, item);
             lstFrames.SelectedIndex = prevIndex + 1;
+        }
+
+        private void btnSaveIND_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Guardar indice";
+            saveFileDialog.DefaultExt = "";
+            saveFileDialog.FileName = "";
+            saveFileDialog.Filter = "Archivo de indice INI (*.ini)|*.ini|Archivo de indice JSON (*.json)|*.json|Archivo de indice IND (*.ind)|*.ind|Todos los archivos (*.*)|*.*";
+            saveFileDialog.FilterIndex = 0;
+            string filepath = "";
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                filepath = saveFileDialog.FileName;
+            }
+            if (filepath.Length == 0)
+            {
+                return;
+            }
+
+            string name = System.IO.Path.GetFileName(filepath);
+            if (name.EndsWith(".ind"))
+            {
+                using (BinaryWriter binWriter = new BinaryWriter(File.Open(filepath, FileMode.Create)))
+                {
+                    binWriter.Write(Convert.ToInt32(txtVer.Text));
+                    binWriter.Write(MaxGrh);
+                    foreach (IndexStruct i in indexList)
+                    {
+                        if (i.NumFrames > 0)
+                        {
+                            binWriter.Write(i.GrhNum);
+                            if (i.NumFrames > 1)
+                            {
+                                binWriter.Write(Convert.ToInt16(i.Frames.Length));
+                                for (int t = 0; t < i.NumFrames; t++)
+                                {
+                                    binWriter.Write(i.Frames[t]);
+                                }
+                                binWriter.Write(Convert.ToSingle(i.Speed));
+                            }
+                            else
+                            {
+                                binWriter.Write(Convert.ToInt16(i.NumFrames));
+                                binWriter.Write(i.ImageNum);
+                                binWriter.Write(Convert.ToInt16(i.PosX));
+                                binWriter.Write(Convert.ToInt16(i.PosY));
+                                binWriter.Write(Convert.ToInt16(i.Width));
+                                binWriter.Write(Convert.ToInt16(i.Height));
+                            }
+                        }
+
+                    }
+                }
+            }
+            else if (name.EndsWith(".json"))
+            {
+                MainJsonStruct IndJson = new MainJsonStruct();
+                IndJson.MaxGrh = MaxGrh;
+                IndJson.Version = Convert.ToInt32(txtVer.Text);
+                IndJson.Graphics = indexList;
+
+                var settings = new Newtonsoft.Json.JsonSerializerSettings();
+                settings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                settings.DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore;
+                string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(IndJson, settings);
+
+                File.WriteAllTextAsync(filepath, jsonString);
+            }
+            else
+            {
+                var parser = new IniParser.FileIniDataParser();
+                IniParser.Model.IniData IndINI = new IniParser.Model.IniData();
+                IndINI["INIT"]["NumGrh"] = MaxGrh.ToString();
+                IndINI["INIT"]["Version"] = txtVer.Text;
+                foreach (IndexStruct i in indexList)
+                {
+                    string grhLine = "";
+                    if (i.NumFrames > 0)
+                    {
+                        if (i.NumFrames > 1)
+                        {
+                            grhLine = i.Frames.Length.ToString() + "-";
+                            for (int t = 0; t < i.NumFrames; t++)
+                            {
+                                grhLine += i.Frames[t].ToString() + "-";
+                            }
+                            grhLine += i.Speed.ToString();
+                        }
+                        else
+                        {
+                            grhLine = i.NumFrames.ToString() + "-";
+                            grhLine += i.ImageNum.ToString() + "-";
+                            grhLine += i.PosX.ToString() + "-";
+                            grhLine += i.PosY.ToString() + "-";
+                            grhLine += i.Width.ToString() + "-";
+                            grhLine += i.Height.ToString();
+                        }
+                    }
+                    IndINI["Graphics"]["Grh" + i.GrhNum.ToString()] = grhLine;
+                }
+                parser.WriteFile(filepath, IndINI);
+            }
+            MessageBox.Show("El Indice " + filepath + " ha sido exportado con exito.");
         }
     }
 }

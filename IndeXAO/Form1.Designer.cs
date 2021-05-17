@@ -68,6 +68,7 @@ namespace IndeXAO
             this.cmdAdd = new System.Windows.Forms.Button();
             this.cmdEditGrh = new System.Windows.Forms.Button();
             this.timerAnim = new System.Windows.Forms.Timer(this.components);
+            this.btnSaveIND = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
             this.grpBoxIndex.SuspendLayout();
@@ -85,12 +86,12 @@ namespace IndeXAO
             // 
             // cmdGraficos
             // 
-            this.cmdGraficos.Location = new System.Drawing.Point(9, 10);
+            this.cmdGraficos.Location = new System.Drawing.Point(9, 8);
             this.cmdGraficos.Margin = new System.Windows.Forms.Padding(2);
             this.cmdGraficos.Name = "cmdGraficos";
-            this.cmdGraficos.Size = new System.Drawing.Size(109, 25);
+            this.cmdGraficos.Size = new System.Drawing.Size(109, 27);
             this.cmdGraficos.TabIndex = 1;
-            this.cmdGraficos.Text = "Dir. &Gráficos";
+            this.cmdGraficos.Text = "&Dir. Gráficos";
             this.cmdGraficos.UseVisualStyleBackColor = true;
             this.cmdGraficos.Click += new System.EventHandler(this.cmdGraficos_Click);
             // 
@@ -99,7 +100,7 @@ namespace IndeXAO
             this.cmdIndice.Location = new System.Drawing.Point(10, 39);
             this.cmdIndice.Margin = new System.Windows.Forms.Padding(2);
             this.cmdIndice.Name = "cmdIndice";
-            this.cmdIndice.Size = new System.Drawing.Size(109, 25);
+            this.cmdIndice.Size = new System.Drawing.Size(109, 30);
             this.cmdIndice.TabIndex = 3;
             this.cmdIndice.Text = "&Ind. Gráficos";
             this.cmdIndice.UseVisualStyleBackColor = true;
@@ -461,11 +462,23 @@ namespace IndeXAO
             // 
             this.timerAnim.Tick += new System.EventHandler(this.timerAnim_Tick);
             // 
+            // btnSaveIND
+            // 
+            this.btnSaveIND.Location = new System.Drawing.Point(656, 8);
+            this.btnSaveIND.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSaveIND.Name = "btnSaveIND";
+            this.btnSaveIND.Size = new System.Drawing.Size(186, 29);
+            this.btnSaveIND.TabIndex = 17;
+            this.btnSaveIND.Text = "&Guardar Indice";
+            this.btnSaveIND.UseVisualStyleBackColor = true;
+            this.btnSaveIND.Click += new System.EventHandler(this.btnSaveIND_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(949, 556);
+            this.Controls.Add(this.btnSaveIND);
             this.Controls.Add(this.cmdEditGrh);
             this.Controls.Add(this.grpBoxIndex);
             this.Controls.Add(this.cmdCambiarFondo);
@@ -542,6 +555,7 @@ namespace IndeXAO
         private System.Windows.Forms.Timer timerAnim;
         private System.Windows.Forms.Button cmdDown;
         private System.Windows.Forms.Button cmdUp;
+        private System.Windows.Forms.Button btnSaveIND;
     }
 }
 
