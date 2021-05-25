@@ -59,5 +59,15 @@ namespace IndeXAO.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AO1080p_dark {
+            get {
+                object obj = ResourceManager.GetObject("AO1080p-dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

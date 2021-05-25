@@ -47,6 +47,12 @@ namespace IndeXAO
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(grpBoxIndex_DragEnter);
             this.DragDrop += new DragEventHandler(grpBoxIndex_DragDrop);
+            panel3.DragEnter += new DragEventHandler(grpBoxIndex_DragEnter);
+            panel3.DragDrop += new DragEventHandler(grpBoxIndex_DragDrop);
+            tableLayoutPanel10.DragEnter += new DragEventHandler(grpBoxIndex_DragEnter);
+            tableLayoutPanel10.DragDrop += new DragEventHandler(grpBoxIndex_DragDrop);
+            tableLayoutPanel10.Visible = false;
+            tableLayoutPanel9.Visible = false;
         }
 
         private void cmdGraficos_Click(object sender, EventArgs e)
@@ -66,8 +72,8 @@ namespace IndeXAO
             txtGraficos.Text = dirGraficos;
             string[] files = System.IO.Directory.GetFiles(dirGraficos);
             int grh = 0;
-            listGraficos.BeginUpdate();
-            listGraficos.Items.Clear();
+            //listGraficos.BeginUpdate();
+            //listGraficos.Items.Clear();
             foreach (string file in files)
             {
                 string name = System.IO.Path.GetFileName(file);
@@ -77,12 +83,12 @@ namespace IndeXAO
                     bool isNumeric = int.TryParse(first, out _);
                     if (isNumeric)
                     {
-                        listGraficos.Items.Add(name);
+                        //listGraficos.Items.Add(name);
                         grh++;
                     }
                 }
             }
-            listGraficos.EndUpdate();
+            //listGraficos.EndUpdate();
             lblGraficos.Text = "Gráficos: " + grh.ToString();
         }
 
@@ -105,7 +111,7 @@ namespace IndeXAO
             openFileDialog.Title = "Abrir indice";
             openFileDialog.DefaultExt = "";
             openFileDialog.FileName = "";
-            openFileDialog.Filter = "Archivo de indice (*.ini;*.ind)|*.ini;*.ind|Todos los archivos (*.*)|*.*";
+            openFileDialog.Filter = "Archivo de indice (*.ini;*.ind;*.json)|*.ini;*.ind;*.json|Todos los archivos (*.*)|*.*";
             openFileDialog.FilterIndex = 0;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -123,11 +129,12 @@ namespace IndeXAO
         {
             txtIndice.Text = filepath;
             string name = System.IO.Path.GetFileName(filepath);
+            lblIndice.Text = "Indices: ...";
+            Application.DoEvents();
 
             indexList.Clear();
             if (name.EndsWith(".ind")) {
                 System.IO.FileInfo fi = new System.IO.FileInfo(filepath);
-                lblIndice.Text = fi.Length.ToString();
                 fileMemory.Dispose();
                 fileMemory = new System.IO.MemoryStream();
                 using (System.IO.FileStream fs = System.IO.File.OpenRead(filepath))
@@ -145,7 +152,6 @@ namespace IndeXAO
                 // MaxGrh
                 var maxGrh = new byte[4];
                 fileMemory.Read(maxGrh, 0, (int)maxGrh.Length);
-                lblIndice.Text = "Indices: " + BitConverter.ToInt32(maxGrh).ToString();
                 MaxGrh = BitConverter.ToInt32(maxGrh);
 
                 bool exit = false;
@@ -208,14 +214,25 @@ namespace IndeXAO
                 } while (!exit || fileMemory.Position > fileMemory.Length);
             } else if (name.EndsWith(".json"))
             {
-                MessageBox.Show("Es indice json");
+                MainJsonStruct IndJson = new MainJsonStruct();
+                string jsonString = File.ReadAllText(filepath);
+
+                var settings = new Newtonsoft.Json.JsonSerializerSettings();
+                settings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                settings.DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore;
+
+                IndJson = Newtonsoft.Json.JsonConvert.DeserializeObject< MainJsonStruct>(jsonString);
+
+                MaxGrh = IndJson.MaxGrh;
+                txtVer.Text = IndJson.Version.ToString();
+                indexList = IndJson.Graphics;
+
             } else
             {
                 var parser = new IniParser.FileIniDataParser();
                 IniParser.Model.IniData IndINI = new IniParser.Model.IniData();
                 IndINI = parser.ReadFile(filepath);
                 MaxGrh = Convert.ToInt32(IndINI["INIT"]["NumGrh"]);
-                lblIndice.Text = "Indices: " + MaxGrh.ToString();
                 txtVer.Text = IndINI["INIT"]["Version"];
                 for (int i = 0; i <= MaxGrh; i++)
                 {
@@ -257,34 +274,6 @@ namespace IndeXAO
                         indexList.Add(newIndex);
                     }
                 }
-                /*
-                foreach (IndexStruct i in indexList)
-                {
-                    string grhLine = "";
-                    if (i.NumFrames > 0)
-                    {
-                        if (i.NumFrames > 1)
-                        {
-                            grhLine = i.Frames.Length.ToString() + "-";
-                            for (int t = 0; t < i.NumFrames; t++)
-                            {
-                                grhLine += i.Frames[t].ToString() + "-";
-                            }
-                            grhLine += i.Speed.ToString();
-                        }
-                        else
-                        {
-                            grhLine = i.NumFrames.ToString() + "-";
-                            grhLine += i.ImageNum.ToString() + "-";
-                            grhLine += i.PosX.ToString() + "-";
-                            grhLine += i.PosY.ToString() + "-";
-                            grhLine += i.Width.ToString() + "-";
-                            grhLine += i.Height.ToString();
-                        }
-                    }
-                    IndINI["Graphics"]["Grh" + i.GrhNum.ToString()] = grhLine;
-                }
-                */
             }
 
             lstIndices.BeginUpdate();
@@ -307,6 +296,9 @@ namespace IndeXAO
                 lstIndices.Items.Add(indexList[i].GrhNum.ToString() + "\t" + tag);
             }
             lstIndices.EndUpdate();
+
+            lblIndice.Text = "Indices: " + MaxGrh.ToString();
+
         }
 
         private void lstIndices_SelectedIndexChanged(object sender, EventArgs e)
@@ -344,6 +336,8 @@ namespace IndeXAO
             if (index.NumFrames == 1)
             {
                 rdoStatic.Checked = true;
+                tableLayoutPanel10.Visible = true;
+                tableLayoutPanel9.Visible = false;
                 txtImageNum.Text = index.ImageNum.ToString();
                 txtPosX.Text = index.PosX.ToString();
                 txtPosY.Text = index.PosY.ToString();
@@ -369,6 +363,8 @@ namespace IndeXAO
             } else if (index.NumFrames > 1)
             {
                 rdoAnim.Checked = true;
+                tableLayoutPanel9.Visible = true;
+                tableLayoutPanel10.Visible = false;
                 lstFrames.Items.Clear();
                 foreach (int frame in index.Frames)
                 {
@@ -453,6 +449,9 @@ namespace IndeXAO
             if (rdoAnim.Checked)
             {
                 rdoStatic.Checked = false;
+                tableLayoutPanel10.Visible = false;
+                tableLayoutPanel9.Visible = true;
+                /*
                 label1.Visible = false;
                 label2.Visible = false;
                 label3.Visible = false;
@@ -470,6 +469,8 @@ namespace IndeXAO
                 txtSpeed.Visible = true;
                 cmdUp.Visible = true;
                 cmdDown.Visible = true;
+                picImage.Visible = false;
+                */
             }
         }
 
@@ -478,6 +479,9 @@ namespace IndeXAO
             if (rdoStatic.Checked)
             {
                 rdoAnim.Checked = false;
+                tableLayoutPanel10.Visible = true;
+                tableLayoutPanel9.Visible = false;
+                /*
                 label1.Visible = true;
                 label2.Visible = true;
                 label3.Visible = true;
@@ -495,6 +499,8 @@ namespace IndeXAO
                 txtSpeed.Visible = false;
                 cmdUp.Visible = false;
                 cmdDown.Visible = false;
+                picImage.Visible = true;
+                */
             }
         }
 
@@ -780,5 +786,11 @@ namespace IndeXAO
             }
             MessageBox.Show("El Indice " + filepath + " ha sido exportado con exito.");
         }
+
+        private void panel4_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
     }
 }
