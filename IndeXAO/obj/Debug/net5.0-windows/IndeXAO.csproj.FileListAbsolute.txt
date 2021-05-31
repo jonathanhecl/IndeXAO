@@ -19,4 +19,3 @@ C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.csproj
 C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\INIFileParser.dll
 C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.Properties.Resources.resources
 C:\Users\GS\source\repos\IndeXAO\IndeXAO\bin\Debug\net5.0-windows\Newtonsoft.Json.dll
-C:\Users\GS\source\repos\IndeXAO\IndeXAO\obj\Debug\net5.0-windows\IndeXAO.csprojAssemblyReference.cache

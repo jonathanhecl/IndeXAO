@@ -45,14 +45,47 @@ namespace IndeXAO
         {
             InitializeComponent();
             this.AllowDrop = true;
-            this.DragEnter += new DragEventHandler(grpBoxIndex_DragEnter);
-            this.DragDrop += new DragEventHandler(grpBoxIndex_DragDrop);
-            panel3.DragEnter += new DragEventHandler(grpBoxIndex_DragEnter);
-            panel3.DragDrop += new DragEventHandler(grpBoxIndex_DragDrop);
-            tableLayoutPanel10.DragEnter += new DragEventHandler(grpBoxIndex_DragEnter);
-            tableLayoutPanel10.DragDrop += new DragEventHandler(grpBoxIndex_DragDrop);
+            this.DragEnter += new DragEventHandler(Form1_DragEnter);
+            this.DragDrop += new DragEventHandler(Form1_DragDrop);
             tableLayoutPanel10.Visible = false;
             tableLayoutPanel9.Visible = false;
+        }
+
+        private void Form1_DragEnter(object sender, DragEventArgs e)
+        {
+            MessageBox.Show("enter");
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        private void Form1_DragDrop(object sender, DragEventArgs e)
+        {
+            MessageBox.Show("drop");
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length > 0)
+            {
+                var ext = System.IO.Path.GetExtension(files[0]);
+                if (ext == ".bmp" || ext == ".png")
+                {
+                    var filename = System.IO.Path.GetFileNameWithoutExtension(files[0]);
+                    bool isNumeric = int.TryParse(filename, out _);
+                    if (isNumeric)
+                    {
+                        txtImageNum.Text = filename;
+                        string dirPath = ConfigINI["INIT"]["DirGraficos"];
+                        string filePath = System.IO.Path.Combine(dirPath, txtImageNum.Text);
+                        if (System.IO.File.Exists(filePath + ".png"))
+                            filePath += ".png";
+                        else if (System.IO.File.Exists(filePath + ".png"))
+                            filePath += ".png";
+                        else
+                            return;
+                        Bitmap myImg = new Bitmap(filePath);
+                        myImg.MakeTransparent();
+                        picImage.SizeMode = PictureBoxSizeMode.Zoom;
+                        picImage.Image = myImg;
+                    }
+                }
+            }
         }
 
         private void cmdGraficos_Click(object sender, EventArgs e)
@@ -403,15 +436,40 @@ namespace IndeXAO
                     cacheImage = myImg;
                     cacheFile = filePath;
                 }
+                if (index.PosX < 0)
+                {
+                    MessageBox.Show("El movimiento horizontal debe ser positivo.");
+                    return;
+                } else if (index.PosY< 0)
+                {
+                    MessageBox.Show("El movimiento vertical debe ser positivo.");
+                    return;
+                }
+                if (cacheImage.Width < index.Width + index.PosX)
+                {
+                    MessageBox.Show("Se esta desplazando fuera de la imagen horizontalmente.");
+                    return;
+                } else if (cacheImage.Height < index.Height + index.PosY)
+                {
+                    MessageBox.Show("Se esta desplazando fuera de la imagen verticalmente.");
+                    return;
+                }
                 var newImg = cacheImage.Clone(new Rectangle { X = index.PosX, Y = index.PosY, Width = index.Width, Height = index.Height }, cacheImage.PixelFormat);
                 int newWidth = index.Width * zoomBar.Value;
                 int newHeight = index.Height * zoomBar.Value;
-                newImg = new Bitmap(newImg, new Size(newWidth, newHeight));
-                if (newImg.Height > picImg.Height || newImg.Width > picImg.Width)
+                Bitmap resizedImg = new Bitmap(newWidth, newHeight);
+                using (Graphics gr = Graphics.FromImage(resizedImg))
+                {
+                    gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    gr.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                    gr.DrawImage(newImg, new Rectangle(0, 0, newWidth, newHeight));
+                };
+                if (newWidth > picImg.Height || newHeight > picImg.Width)
                     picImg.SizeMode = PictureBoxSizeMode.Zoom;
                 else
                     picImg.SizeMode = PictureBoxSizeMode.Normal;
-                picImg.Image = newImg;
+                picImg.Image = resizedImg;
             } else if (index.NumFrames > 1)
             {
                 timerAnim.Enabled = false;
@@ -451,26 +509,6 @@ namespace IndeXAO
                 rdoStatic.Checked = false;
                 tableLayoutPanel10.Visible = false;
                 tableLayoutPanel9.Visible = true;
-                /*
-                label1.Visible = false;
-                label2.Visible = false;
-                label3.Visible = false;
-                label4.Visible = false;
-                label5.Visible = false;
-                txtImageNum.Visible = false;
-                txtPosX.Visible = false;
-                txtPosY.Visible = false;
-                txtWidth.Visible = false;
-                txtHeight.Visible = false;
-                label7.Visible = true;
-                lstFrames.Visible = true;
-                cmdAdd.Enabled = true;
-                cmdRemove.Visible = true;
-                txtSpeed.Visible = true;
-                cmdUp.Visible = true;
-                cmdDown.Visible = true;
-                picImage.Visible = false;
-                */
             }
         }
 
@@ -481,65 +519,6 @@ namespace IndeXAO
                 rdoAnim.Checked = false;
                 tableLayoutPanel10.Visible = true;
                 tableLayoutPanel9.Visible = false;
-                /*
-                label1.Visible = true;
-                label2.Visible = true;
-                label3.Visible = true;
-                label4.Visible = true;
-                label5.Visible = true;
-                txtImageNum.Visible = true;
-                txtPosX.Visible = true;
-                txtPosY.Visible = true;
-                txtWidth.Visible = true;
-                txtHeight.Visible = true;
-                label7.Visible = false;
-                lstFrames.Visible = false;
-                cmdAdd.Enabled = false;
-                cmdRemove.Visible = false;
-                txtSpeed.Visible = false;
-                cmdUp.Visible = false;
-                cmdDown.Visible = false;
-                picImage.Visible = true;
-                */
-            }
-        }
-
-        private void grpBoxIndex_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void grpBoxIndex_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
-        }
-
-        private void grpBoxIndex_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (files.Length > 0) {
-                var ext = System.IO.Path.GetExtension(files[0]);
-                if (ext == ".bmp" || ext == ".png")
-                {
-                    var filename = System.IO.Path.GetFileNameWithoutExtension(files[0]);
-                    bool isNumeric = int.TryParse(filename, out _);
-                    if (isNumeric)
-                    {
-                        txtImageNum.Text = filename;
-                        string dirPath = ConfigINI["INIT"]["DirGraficos"];
-                        string filePath = System.IO.Path.Combine(dirPath, txtImageNum.Text);
-                        if (System.IO.File.Exists(filePath + ".bmp"))
-                            filePath += ".bmp";
-                        else if (System.IO.File.Exists(filePath + ".png"))
-                            filePath += ".png";
-                        else
-                            return;
-                        Bitmap myImg = new Bitmap(filePath);
-                        myImg.MakeTransparent();
-                        picImage.SizeMode = PictureBoxSizeMode.Zoom;
-                        picImage.Image = myImg;
-                    }                    
-                }
             }
         }
 
@@ -787,10 +766,42 @@ namespace IndeXAO
             MessageBox.Show("El Indice " + filepath + " ha sido exportado con exito.");
         }
 
-        private void panel4_Paint(object sender, PaintEventArgs e)
+        private void txtGraficos_TextChanged(object sender, EventArgs e)
         {
 
         }
 
+        private void txtGraficos_DoubleClick(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer.exe", ConfigINI["INIT"]["DirGraficos"].ToString());
+        }
+
+        private void txtIndice_DoubleClick(object sender, EventArgs e)
+        {
+            if (System.IO.Path.GetExtension(ConfigINI["INIT"]["DirIndice"].ToString()) == ".ini")
+            {
+                System.Diagnostics.Process.Start("explorer.exe", ConfigINI["INIT"]["DirIndice"].ToString());
+            } else
+            {
+                string path = System.IO.Path.GetDirectoryName(ConfigINI["INIT"]["DirIndice"].ToString());
+                System.Diagnostics.Process.Start("explorer.exe", path);
+            }
+            
+        }
+
+        private void txtImageNum_DoubleClick(object sender, EventArgs e)
+        {
+            String filePath = ConfigINI["INIT"]["DirGraficos"].ToString();
+            if (System.IO.File.Exists(System.IO.Path.Combine(filePath, txtImageNum.Text + ".bmp")))
+                filePath = System.IO.Path.Combine(filePath, txtImageNum.Text + ".bmp");
+            else if (System.IO.File.Exists(System.IO.Path.Combine(filePath, txtImageNum.Text + ".png")))
+                filePath = System.IO.Path.Combine(filePath, txtImageNum.Text + ".png");
+            System.Diagnostics.Process.Start("explorer.exe", filePath);              
+        }
+
+        private void txtImageNum_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
