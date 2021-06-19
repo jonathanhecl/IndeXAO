@@ -42,6 +42,7 @@ namespace IndeXAO
             this.lblIndice = new System.Windows.Forms.Label();
             this.lblGraficos = new System.Windows.Forms.Label();
             this.btnSaveIND = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
@@ -216,6 +217,7 @@ namespace IndeXAO
             this.tableLayoutPanel5.Controls.Add(this.lblIndice, 0, 1);
             this.tableLayoutPanel5.Controls.Add(this.lblGraficos, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.btnSaveIND, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.button1, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(759, 0);
             this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(0);
@@ -248,14 +250,26 @@ namespace IndeXAO
             // 
             // btnSaveIND
             // 
+            this.btnSaveIND.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnSaveIND.Location = new System.Drawing.Point(145, 34);
             this.btnSaveIND.Margin = new System.Windows.Forms.Padding(2);
             this.btnSaveIND.Name = "btnSaveIND";
-            this.btnSaveIND.Size = new System.Drawing.Size(72, 22);
+            this.btnSaveIND.Size = new System.Drawing.Size(72, 28);
             this.btnSaveIND.TabIndex = 25;
             this.btnSaveIND.Text = "&Guardar Indice";
             this.btnSaveIND.UseVisualStyleBackColor = true;
             this.btnSaveIND.Click += new System.EventHandler(this.btnSaveIND_Click);
+            // 
+            // button1
+            // 
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button1.Location = new System.Drawing.Point(146, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(70, 26);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "Consola";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // panel2
             // 
@@ -938,6 +952,7 @@ namespace IndeXAO
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
+        private System.Windows.Forms.Button button1;
     }
 }
 

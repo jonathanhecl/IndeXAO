@@ -14,6 +14,7 @@ namespace IndeXAO
     public partial class Form1 : Form
     {
         string ConfigFile = "config.ini";
+        Form2 frmConsole = new Form2();
         IniParser.Model.IniData ConfigINI = new IniParser.Model.IniData();
         string DirGraphics;
         string FileIndex;
@@ -71,6 +72,7 @@ namespace IndeXAO
                     if (isNumeric)
                     {
                         txtImageNum.Text = filename;
+                        /*
                         string dirPath = ConfigINI["INIT"]["DirGraficos"];
                         string filePath = System.IO.Path.Combine(dirPath, txtImageNum.Text);
                         if (System.IO.File.Exists(filePath + ".png"))
@@ -79,6 +81,12 @@ namespace IndeXAO
                             filePath += ".png";
                         else
                             return;
+                        */
+                        string filePath = GetImageFilename(Int32.Parse(txtImageNum.Text));
+                        if (filePath.Length == 0)
+                        {
+                            return;
+                        }
                         Bitmap myImg = new Bitmap(filePath);
                         myImg.MakeTransparent();
                         picImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -177,26 +185,67 @@ namespace IndeXAO
 
                 fileMemory.Seek(0x00, System.IO.SeekOrigin.Begin);
 
-                // Version
-                var ver = new byte[4];
-                fileMemory.Read(ver, 0, (int)ver.Length);
-                txtVer.Text = BitConverter.ToInt32(ver).ToString();
+                // Exists Cabecera 9.9 old school?
+                var cabecera = new byte[255];
+                fileMemory.Read(cabecera, 0, (int)cabecera.Length);
+                if (cabecera.All(b => b >= 32 && b <= 127))
+                {
+                    //string tDesc = Encoding.Default.GetString(cabecera);
+                    var tLong = new byte[4];
+                    fileMemory.Read(tLong, 0, (int)tLong.Length);
+                    fileMemory.Read(tLong, 0, (int)tLong.Length);
+                    var tInt = new byte[2];
+                    fileMemory.Read(tInt, 0, (int)tInt.Length);
+                    fileMemory.Read(tInt, 0, (int)tInt.Length);
+                    fileMemory.Read(tInt, 0, (int)tInt.Length);
+                    fileMemory.Read(tInt, 0, (int)tInt.Length);
+                    fileMemory.Read(tInt, 0, (int)tInt.Length);
+                    txtVer.Text = "0";
+                    MaxGrh = 0;
+                } else
+                {
+                    fileMemory.Seek(0x00, System.IO.SeekOrigin.Begin);
+                    // Version
+                    var ver = new byte[4];
+                    fileMemory.Read(ver, 0, (int)ver.Length);
+                    txtVer.Text = BitConverter.ToInt32(ver).ToString();
 
-                // MaxGrh
-                var maxGrh = new byte[4];
-                fileMemory.Read(maxGrh, 0, (int)maxGrh.Length);
-                MaxGrh = BitConverter.ToInt32(maxGrh);
+                    // MaxGrh
+                    var maxGrh = new byte[4];
+                    fileMemory.Read(maxGrh, 0, (int)maxGrh.Length);
+                    MaxGrh = BitConverter.ToInt32(maxGrh);
+                }
 
                 bool exit = false;
-                
+                bool isGrhInt = false;
+                Int32 maxGrhLoaded = 0;
+
                 do
                 {
                     IndexStruct newIndex = new IndexStruct();
 
                     // Grh number
-                    var number = new byte[4];
-                    fileMemory.Read(number, 0, (int)number.Length);
-                    newIndex.GrhNum = BitConverter.ToInt32(number);
+                    if (isGrhInt == false) { 
+                        var number = new byte[4];
+                        fileMemory.Read(number, 0, (int)number.Length);
+                        newIndex.GrhNum = BitConverter.ToInt32(number);
+                        if (newIndex.GrhNum > 32000 && maxGrhLoaded==0)
+                        {
+                            fileMemory.Seek(-4, System.IO.SeekOrigin.Current);
+                            var tInt = new byte[2];
+                            fileMemory.Read(tInt, 0, (int)tInt.Length);
+                            newIndex.GrhNum = BitConverter.ToInt16(tInt);
+                            isGrhInt = true;
+                        }
+                    } else if (isGrhInt==true)
+                    {
+                        var tInt = new byte[2];
+                        fileMemory.Read(tInt, 0, (int)tInt.Length);
+                        newIndex.GrhNum = BitConverter.ToInt16(tInt);
+                    }
+                    if (maxGrhLoaded< newIndex.GrhNum) {
+                        maxGrhLoaded = newIndex.GrhNum;
+                    }
 
                     // Frames
                     var frames = new byte[2];
@@ -205,9 +254,23 @@ namespace IndeXAO
 
                     if (newIndex.NumFrames == 1)
                     {
-                        var image = new byte[4];
-                        fileMemory.Read(image, 0, (int)image.Length);
-                        newIndex.ImageNum = BitConverter.ToInt32(image);
+                        if (isGrhInt == true)
+                        {
+                            var image = new byte[2];
+                            fileMemory.Read(image, 0, (int)image.Length);
+                            newIndex.ImageNum = BitConverter.ToInt16(image);
+                        } else
+                        {
+                            var image = new byte[4];
+                            fileMemory.Read(image, 0, (int)image.Length);
+                            newIndex.ImageNum = BitConverter.ToInt32(image);
+                        }
+                        // Debug
+                        string filePath = GetImageFilename(newIndex.ImageNum);
+                        if (filePath.Length == 0)
+                        {
+                            frmConsole.ConsoleText = "El Grh " + newIndex.GrhNum.ToString() + " hace referencia a una imagen faltante " + newIndex.ImageNum.ToString();
+                        }
                         var posX = new byte[2];
                         fileMemory.Read(posX, 0, (int)posX.Length);
                         newIndex.PosX = BitConverter.ToInt16(posX);
@@ -228,15 +291,29 @@ namespace IndeXAO
                         int i = 0;
                         do
                         {
-                            var grh = new byte[4];
-                            fileMemory.Read(grh, 0, (int)grh.Length);
-                            newIndex.Frames[i] = BitConverter.ToInt32(grh);
+                            if (isGrhInt == true)
+                            {
+                                var grh = new byte[2];
+                                fileMemory.Read(grh, 0, (int)grh.Length);
+                                newIndex.Frames[i] = BitConverter.ToInt16(grh);
+                            } else
+                            {
+                                var grh = new byte[4];
+                                fileMemory.Read(grh, 0, (int)grh.Length);
+                                newIndex.Frames[i] = BitConverter.ToInt32(grh);
+                            }
                             i++;
                         } while (i < maxFrames);
-
-                        var speed = new byte[4];
-                        fileMemory.Read(speed, 0, (int)speed.Length);
-                        newIndex.Speed = BitConverter.ToSingle(speed);
+                        if (isGrhInt==true)
+                        {
+                            var speed = new byte[2];
+                            fileMemory.Read(speed, 0, (int)speed.Length);
+                            newIndex.Speed = BitConverter.ToInt16(speed);
+                        } else { 
+                            var speed = new byte[4];
+                            fileMemory.Read(speed, 0, (int)speed.Length);
+                            newIndex.Speed = BitConverter.ToSingle(speed);
+                        }
                     } else
                     {
                         exit = true;
@@ -245,6 +322,9 @@ namespace IndeXAO
                         indexList.Add(newIndex);
                     }
                 } while (!exit || fileMemory.Position > fileMemory.Length);
+                if (MaxGrh == 0) {
+                    MaxGrh = maxGrhLoaded;
+                }
             } else if (name.EndsWith(".json"))
             {
                 MainJsonStruct IndJson = new MainJsonStruct();
@@ -376,6 +456,7 @@ namespace IndeXAO
                 txtPosY.Text = index.PosY.ToString();
                 txtWidth.Text = index.Width.ToString();
                 txtHeight.Text = index.Height.ToString();
+                /*
                 string dirPath = ConfigINI["INIT"]["DirGraficos"];
                 string filePath = System.IO.Path.Combine(dirPath, index.ImageNum.ToString());
                 if (System.IO.File.Exists(filePath + ".bmp"))
@@ -384,13 +465,18 @@ namespace IndeXAO
                     filePath += ".png";
                 else
                     return;
-                if(cacheFile != filePath)
+                */
+                string filePath = GetImageFilename(index.ImageNum);
+                if (filePath.Length == 0)
+                {
+                    return;
+                } else if (cacheFile != filePath)
                 {
                     Bitmap myImg = new Bitmap(filePath);
                     myImg.MakeTransparent();
                     cacheImage = myImg;
                     cacheFile = filePath;
-                }                
+                }
                 picImage.SizeMode = PictureBoxSizeMode.Zoom;
                 picImage.Image = cacheImage;
             } else if (index.NumFrames > 1)
@@ -405,6 +491,19 @@ namespace IndeXAO
                 }
                 txtSpeed.Text = index.Speed.ToString();
             }
+        }
+
+        private string GetImageFilename(int ImageNum)
+        {
+            string dirPath = ConfigINI["INIT"]["DirGraficos"];
+            string filePath = System.IO.Path.Combine(dirPath, ImageNum.ToString());
+            if (System.IO.File.Exists(filePath + ".bmp"))
+                filePath += ".bmp";
+            else if (System.IO.File.Exists(filePath + ".png"))
+                filePath += ".png";
+            else
+                return "";
+            return filePath;
         }
         private void LoadImg(int grhNumber)
         {
@@ -422,6 +521,7 @@ namespace IndeXAO
 
             if (index.NumFrames == 1)
             {
+                /*
                 string filePath = System.IO.Path.Combine(dirPath, index.ImageNum.ToString());
                 if (System.IO.File.Exists(filePath + ".bmp"))
                     filePath += ".bmp";
@@ -429,12 +529,18 @@ namespace IndeXAO
                     filePath += ".png";
                 else
                     return;
-                if (cacheFile != filePath)
+                */
+                string filePath = GetImageFilename(index.ImageNum);
+                if (filePath.Length == 0)
+                {
+                    return;
+                }
+                else if (cacheFile != filePath)
                 {
                     Bitmap myImg = new Bitmap(filePath);
                     myImg.MakeTransparent();
                     cacheImage = myImg;
-                    cacheFile = filePath;
+                    cacheFile = filePath;  
                 }
                 if (index.PosX < 0)
                 {
@@ -802,6 +908,11 @@ namespace IndeXAO
         private void txtImageNum_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            frmConsole.Visible = !frmConsole.Visible;
         }
     }
 }
