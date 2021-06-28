@@ -46,6 +46,8 @@ namespace IndeXAO
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtGrhFilter = new System.Windows.Forms.TextBox();
             this.lstIndices = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.cmdAdd = new System.Windows.Forms.Button();
@@ -93,6 +95,7 @@ namespace IndeXAO
             this.panel2.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel6.SuspendLayout();
+            this.tableLayoutPanel11.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.tableLayoutPanel10.SuspendLayout();
@@ -298,7 +301,7 @@ namespace IndeXAO
             // panel6
             // 
             this.panel6.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.panel6.Controls.Add(this.lstIndices);
+            this.panel6.Controls.Add(this.tableLayoutPanel11);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
@@ -307,17 +310,43 @@ namespace IndeXAO
             this.panel6.Size = new System.Drawing.Size(202, 463);
             this.panel6.TabIndex = 25;
             // 
+            // tableLayoutPanel11
+            // 
+            this.tableLayoutPanel11.ColumnCount = 1;
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel11.Controls.Add(this.txtGrhFilter, 0, 0);
+            this.tableLayoutPanel11.Controls.Add(this.lstIndices, 0, 1);
+            this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel11.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
+            this.tableLayoutPanel11.RowCount = 2;
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(196, 460);
+            this.tableLayoutPanel11.TabIndex = 4;
+            // 
+            // txtGrhFilter
+            // 
+            this.txtGrhFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtGrhFilter.Location = new System.Drawing.Point(3, 3);
+            this.txtGrhFilter.Name = "txtGrhFilter";
+            this.txtGrhFilter.Size = new System.Drawing.Size(190, 23);
+            this.txtGrhFilter.TabIndex = 3;
+            this.txtGrhFilter.TextChanged += new System.EventHandler(this.txtGrhFilter_TextChanged);
+            this.txtGrhFilter.DoubleClick += new System.EventHandler(this.txtGrhFilter_DoubleClick);
+            // 
             // lstIndices
             // 
             this.lstIndices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstIndices.FormattingEnabled = true;
             this.lstIndices.ItemHeight = 15;
-            this.lstIndices.Location = new System.Drawing.Point(3, 3);
-            this.lstIndices.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.lstIndices.Location = new System.Drawing.Point(3, 33);
+            this.lstIndices.Margin = new System.Windows.Forms.Padding(3, 3, 3, 2);
             this.lstIndices.Name = "lstIndices";
-            this.lstIndices.Size = new System.Drawing.Size(196, 460);
-            this.lstIndices.TabIndex = 0;
+            this.lstIndices.Size = new System.Drawing.Size(190, 425);
+            this.lstIndices.TabIndex = 2;
             this.lstIndices.SelectedIndexChanged += new System.EventHandler(this.lstIndices_SelectedIndexChanged);
+            this.lstIndices.DoubleClick += new System.EventHandler(this.lstIndices_DoubleClick);
             // 
             // tableLayoutPanel2
             // 
@@ -793,7 +822,7 @@ namespace IndeXAO
             // 
             // picImg
             // 
-            this.picImg.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.picImg.BackColor = System.Drawing.Color.White;
             this.picImg.Dock = System.Windows.Forms.DockStyle.Fill;
             this.picImg.Location = new System.Drawing.Point(3, 3);
             this.picImg.Margin = new System.Windows.Forms.Padding(2);
@@ -871,6 +900,8 @@ namespace IndeXAO
             this.panel2.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
+            this.tableLayoutPanel11.ResumeLayout(false);
+            this.tableLayoutPanel11.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.tableLayoutPanel10.ResumeLayout(false);
@@ -926,7 +957,6 @@ namespace IndeXAO
         private System.Windows.Forms.Button cmdAdd;
         private System.Windows.Forms.Button cmdEditGrh;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.ListBox lstIndices;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.PictureBox picImg;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
@@ -953,6 +983,9 @@ namespace IndeXAO
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox txtGrhFilter;
+        private System.Windows.Forms.ListBox lstIndices;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
     }
 }
 

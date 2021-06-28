@@ -389,6 +389,8 @@ namespace IndeXAO
                 }
             }
 
+            FilterIndices();
+            /*
             lstIndices.BeginUpdate();
             lstIndices.Items.Clear();
             for (int i = 0; i < indexList.Count; i++)
@@ -409,6 +411,7 @@ namespace IndeXAO
                 lstIndices.Items.Add(indexList[i].GrhNum.ToString() + "\t" + tag);
             }
             lstIndices.EndUpdate();
+            */
 
             lblIndice.Text = "Indices: " + MaxGrh.ToString();
 
@@ -774,7 +777,7 @@ namespace IndeXAO
             saveFileDialog.Title = "Guardar indice";
             saveFileDialog.DefaultExt = "";
             saveFileDialog.FileName = "";
-            saveFileDialog.Filter = "Archivo de indice INI (*.ini)|*.ini|Archivo de indice JSON (*.json)|*.json|Archivo de indice IND (*.ind)|*.ind|Todos los archivos (*.*)|*.*";
+            saveFileDialog.Filter = "Archivo de indice INI (*.ini)|*.ini|Archivo de indice JSON (*.json)|*.json|Archivo de indice IND (Nuevo) (*.ind)|*.ind|Archivo de indice IND (Viejo) (*._ind)|*._ind|Todos los archivos (*.*)|*.*";
             saveFileDialog.FilterIndex = 0;
             string filepath = "";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -811,6 +814,79 @@ namespace IndeXAO
                             {
                                 binWriter.Write(Convert.ToInt16(i.NumFrames));
                                 binWriter.Write(i.ImageNum);
+                                binWriter.Write(Convert.ToInt16(i.PosX));
+                                binWriter.Write(Convert.ToInt16(i.PosY));
+                                binWriter.Write(Convert.ToInt16(i.Width));
+                                binWriter.Write(Convert.ToInt16(i.Height));
+                            }
+                        }
+
+                    }
+                }
+            }
+            else if (name.EndsWith("._ind"))
+            {
+                foreach (IndexStruct i in indexList)
+                {
+                    if (i.GrhNum > 32767)
+                    {
+                        MessageBox.Show("El Grh " + i.GrhNum.ToString() + " no es compatible con el formato.");
+                        return;
+                    }
+                    if (i.NumFrames > 1)
+                    {
+                        for (int t = 0; t < i.NumFrames; t++)
+                        {
+                            if (i.Frames[t] > 32767)
+                            {
+                                MessageBox.Show("La animación Grh " + i.GrhNum.ToString() + " tiene un cuadro no compatible con el formato.");
+                                return;
+                            }
+                        }
+                        if (i.Speed > 32767)
+                        {
+                            MessageBox.Show("La animación Grh " + i.GrhNum.ToString() + " tiene una velocidad no compatible con el formato.");
+                            return;
+                        }
+                    } else { 
+                        if (i.ImageNum > 32767)
+                        {
+                            MessageBox.Show("El Grh " + i.GrhNum.ToString() + " tiene una imagen de valor no es compatible con el formato.");
+                            return;
+                        }
+                    }
+                }
+                using (BinaryWriter binWriter = new BinaryWriter(File.Open(filepath, FileMode.Create)))
+                {
+                    byte[] cabecera = Encoding.ASCII.GetBytes("IndeXAO by ^[GS]^ - www.gs-zone.org IndeXAO by ^[GS]^ - www.gs-zone.org IndeXAO by ^[GS]^ - www.gs-zone.org IndeXAO by ^[GS]^ - www.gs-zone.org IndeXAO by ^[GS]^ - www.gs-zone.org IndeXAO by ^[GS]^ - www.gs-zone.org                                        "); // 255 fixed
+                    binWriter.Write(cabecera);
+                    var tLong = new byte[4];
+                    binWriter.Write(tLong);
+                    binWriter.Write(tLong);
+                    var tInt = new byte[2];
+                    binWriter.Write(tInt);
+                    binWriter.Write(tInt);
+                    binWriter.Write(tInt);
+                    binWriter.Write(tInt);
+                    binWriter.Write(tInt);
+                    foreach (IndexStruct i in indexList)
+                    {
+                        if (i.NumFrames > 0)
+                        {
+                            binWriter.Write(Convert.ToInt16(i.GrhNum));
+                            if (i.NumFrames > 1)
+                            {
+                                binWriter.Write(Convert.ToInt16(i.Frames.Length));
+                                for (int t = 0; t < i.NumFrames; t++)
+                                {
+                                    binWriter.Write(Convert.ToInt16(i.Frames[t]));
+                                }
+                                binWriter.Write(Convert.ToInt16(i.Speed));
+                            }
+                            else
+                            {
+                                binWriter.Write(Convert.ToInt16(i.NumFrames));
+                                binWriter.Write(Convert.ToInt16(i.ImageNum));
                                 binWriter.Write(Convert.ToInt16(i.PosX));
                                 binWriter.Write(Convert.ToInt16(i.PosY));
                                 binWriter.Write(Convert.ToInt16(i.Width));
@@ -913,6 +989,127 @@ namespace IndeXAO
         private void button1_Click(object sender, EventArgs e)
         {
             frmConsole.Visible = !frmConsole.Visible;
+        }
+
+        void FilterIndices()
+        {
+            // (GRH)
+            // [BMP]
+            if (txtGrhFilter.Text.Length < 2)
+            {
+                if (lstIndices.Items.Count != indexList.Count)
+                {
+                    lstIndices.BeginUpdate();
+                    lstIndices.Items.Clear();
+                    for (int i = 0; i < indexList.Count; i++)
+                    {
+                        string tag = "";
+                        if (indexList[i].NumFrames == 0)
+                        {
+                            tag = "[VACIO]";
+                        }
+                        else if (indexList[i].NumFrames == 1)
+                        {
+                            tag = indexList[i].ImageNum.ToString();
+                        }
+                        else if (indexList[i].NumFrames > 1)
+                        {
+                            tag = "[Animación] x" + indexList[i].NumFrames.ToString();
+                        }
+                        lstIndices.Items.Add(indexList[i].GrhNum.ToString() + "\t" + tag);
+                    }
+                    lstIndices.EndUpdate();
+                    for (int i = 0; i < lstIndices.Items.Count; i++)
+                    {
+                        int val = Convert.ToInt32(lstIndices.Items[i].ToString().Split("\t")[0]);
+                        if (val == imgSelected)
+                        {
+                            lstIndices.SelectedItem = lstIndices.Items[i];
+                            break;
+                        }
+                    }
+                }
+                return;
+            }
+            lstIndices.BeginUpdate();
+            lstIndices.Items.Clear();
+            for (int i = 0; i < indexList.Count; i++)
+            {
+                Boolean found = false;
+                string key = txtGrhFilter.Text.ToLower();
+                string tag = "";
+
+                if (indexList[i].NumFrames == 0)
+                {
+                    tag = "[VACIO]";
+                }
+                else if (indexList[i].NumFrames == 1)
+                {
+                    tag = indexList[i].ImageNum.ToString();
+                    if (key.StartsWith("[") && key.EndsWith("]"))
+                    {
+                        found = (tag.ToLower().Contains(key.Substring(1, key.Length - 2)));
+                    }
+                }
+                else if (indexList[i].NumFrames > 1)
+                {
+                    tag = "[Animación] x" + indexList[i].NumFrames.ToString();
+                }
+                string val = indexList[i].GrhNum.ToString();
+                if (key.StartsWith("(") && key.EndsWith(")"))
+                {
+                    found = (val.ToLower().Contains(key.Substring(1, key.Length - 2)));
+                }
+                val += "\t" + tag;
+
+                if (!(key.Contains("[") || key.Contains("(")))
+                {
+                    found = (val.ToLower().Contains(key));
+                }
+                if (found)
+                {
+                    lstIndices.Items.Add(val);
+                }
+            }
+            lstIndices.EndUpdate();
+            for (int i = 0; i < lstIndices.Items.Count; i++)
+            {
+                int val = Convert.ToInt32(lstIndices.Items[i].ToString().Split("\t")[0]);
+                if (val == imgSelected)
+                {
+                    lstIndices.SelectedItem = lstIndices.Items[i];
+                    break;
+                }
+            }
+        }
+
+        private void txtGrhFilter_TextChanged(object sender, EventArgs e)
+        {
+            FilterIndices();
+        }
+
+        private void lstIndices_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtGrhFilter_DoubleClick(object sender, EventArgs e)
+        {
+            for (int i = 0; i < lstIndices.Items.Count; i++)
+            {
+                int val = Convert.ToInt32(lstIndices.Items[i].ToString().Split("\t")[0]);
+                if (val == imgSelected)
+                {
+                    if (i > 0) { 
+                    lstIndices.SelectedItem = lstIndices.Items[i-1];
+                    } else if (i < lstIndices.Items.Count) 
+                    {
+                        lstIndices.SelectedItem = lstIndices.Items[i + 1];
+                    }
+                    lstIndices.SelectedItem = lstIndices.Items[i];
+                    break;
+                }
+            }
         }
     }
 }
