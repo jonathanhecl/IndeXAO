@@ -322,7 +322,7 @@ namespace IndeXAO
                         indexList.Add(newIndex);
                     }
                 } while (!exit || fileMemory.Position > fileMemory.Length);
-                if (MaxGrh == 0) {
+                if (MaxGrh == 0 || MaxGrh < maxGrhLoaded) {
                     MaxGrh = maxGrhLoaded;
                 }
             } else if (name.EndsWith(".json"))
@@ -436,7 +436,6 @@ namespace IndeXAO
         int imgSelected = 0;
         int numFrame = 0;
 
-
         private void LoadIndice(int grhNumber)
         {
             IndexStruct index = new IndexStruct();
@@ -480,8 +479,26 @@ namespace IndeXAO
                     cacheImage = myImg;
                     cacheFile = filePath;
                 }
+                // Dibujar frame
+                Bitmap tmpImage;
+                tmpImage = new Bitmap(cacheImage);
+                using (Graphics G = Graphics.FromImage(tmpImage))
+                using (Pen pen = new Pen(Color.Red, 1))
+                {
+                    int tmpWidth = index.Width;
+                    int tmpHeight = index.Height;
+                    if (index.Width >= tmpWidth)
+                    {
+                        tmpWidth = index.Width - 1;
+                    }
+                    if (index.Height >= tmpHeight)
+                    {
+                        tmpHeight = index.Height - 1;
+                    }
+                    G.DrawRectangle(pen, index.PosX, index.PosY, tmpWidth, tmpHeight);
+                }
+                picImage.Image = tmpImage;
                 picImage.SizeMode = PictureBoxSizeMode.Zoom;
-                picImage.Image = cacheImage;
             } else if (index.NumFrames > 1)
             {
                 rdoAnim.Checked = true;
@@ -545,23 +562,25 @@ namespace IndeXAO
                     cacheImage = myImg;
                     cacheFile = filePath;  
                 }
-                if (index.PosX < 0)
-                {
-                    MessageBox.Show("El movimiento horizontal debe ser positivo.");
-                    return;
-                } else if (index.PosY< 0)
-                {
-                    MessageBox.Show("El movimiento vertical debe ser positivo.");
-                    return;
-                }
-                if (cacheImage.Width < index.Width + index.PosX)
-                {
-                    MessageBox.Show("Se esta desplazando fuera de la imagen horizontalmente.");
-                    return;
-                } else if (cacheImage.Height < index.Height + index.PosY)
-                {
-                    MessageBox.Show("Se esta desplazando fuera de la imagen verticalmente.");
-                    return;
+                if (timerAnim.Enabled==false) { 
+                    if (index.PosX < 0)
+                    {
+                        MessageBox.Show("El movimiento horizontal debe ser positivo.");
+                        return;
+                    } else if (index.PosY< 0)
+                    {
+                        MessageBox.Show("El movimiento vertical debe ser positivo.");
+                        return;
+                    }
+                    if (cacheImage.Width < index.Width + index.PosX)
+                    {
+                        MessageBox.Show("Se esta desplazando fuera de la imagen horizontalmente.");
+                        return;
+                    } else if (cacheImage.Height < index.Height + index.PosY)
+                    {
+                        MessageBox.Show("Se esta desplazando fuera de la imagen verticalmente.");
+                        return;
+                    }
                 }
                 var newImg = cacheImage.Clone(new Rectangle { X = index.PosX, Y = index.PosY, Width = index.Width, Height = index.Height }, cacheImage.PixelFormat);
                 int newWidth = index.Width * zoomBar.Value;
@@ -655,70 +674,115 @@ namespace IndeXAO
             LoadIndice(imgSelected);
         }
 
+        private void UpdateIndex(int i, IndexStruct s)
+        {
+            indexList[i] = s;
+            LoadIndice(imgSelected);
+            LoadImg(imgSelected);
+        }
+
         private void cmdAplicarIndice_Click(object sender, EventArgs e)
         {
+            IndexStruct s = new IndexStruct();
             int grhNumber;
             bool isNumeric = int.TryParse(txtGrhNum.Text, out grhNumber);
-            if (isNumeric)
+            if (isNumeric && grhNumber>0) 
             {
-                foreach (IndexStruct i in indexList)
+                // Armar Struct
+                s.NumFrames = 0;
+                s.Frames = new int[0];
+                s.Speed = 0;
+                s.ImageNum = 0;
+                s.PosX = 0;
+                s.PosY = 0;
+                s.Width = 0;
+                s.Height = 0;
+                if (rdoStatic.Checked)
                 {
-                    if (i.GrhNum == grhNumber)
+                    int imageNum;
+                    int.TryParse(txtImageNum.Text, out imageNum);
+                    if (imageNum > 0)
                     {
-                        i.NumFrames = 0;
-                        i.Frames = new int[0];
-                        i.Speed = 0;
-                        i.ImageNum = 0;
-                        i.PosX = 0;
-                        i.PosY = 0;
-                        i.Width = 0;
-                        i.Height = 0;
-                        if(rdoStatic.Checked)
+                        s.NumFrames = 1;
+                        s.ImageNum = imageNum;
+                        int posX;
+                        int.TryParse(txtPosX.Text, out posX);
+                        s.PosX = posX;
+                        int posY;
+                        int.TryParse(txtPosY.Text, out posY);
+                        s.PosY = posY;
+                        int width;
+                        int.TryParse(txtWidth.Text, out width);
+                        s.Width = width;
+                        int height;
+                        int.TryParse(txtHeight.Text, out height);
+                        s.Height = height;
+                    }
+                }
+                else if (rdoAnim.Checked)
+                {
+                    int numFrames = lstFrames.Items.Count;
+                    if (numFrames > 0)
+                    {
+                        s.NumFrames = numFrames;
+                        s.Frames = new int[numFrames];
+                        int n = 0;
+                        do
                         {
-                            int imageNum;
-                            int.TryParse(txtImageNum.Text, out imageNum);
-                            if (imageNum > 0)
-                            {
-                                i.NumFrames = 1;
-                                i.ImageNum = imageNum;
-                                int posX;
-                                int.TryParse(txtPosX.Text, out posX);
-                                i.PosX = posX;
-                                int posY;
-                                int.TryParse(txtPosY.Text, out posY);
-                                i.PosY = posY;
-                                int width;
-                                int.TryParse(txtWidth.Text, out width);
-                                i.Width = width;
-                                int height;
-                                int.TryParse(txtHeight.Text, out height);
-                                i.Height = height;
-                            }
-                        } else if(rdoAnim.Checked)
-                        {
-                            int numFrames = lstFrames.Items.Count;
-                            if (numFrames > 0 )
-                            {
-                                i.NumFrames = numFrames;
-                                i.Frames = new int[numFrames];
-                                int n = 0;
-                                do
-                                {
-                                    int grh;
-                                    int.TryParse(lstFrames.Items[n].ToString(), out grh);
-                                    i.Frames[n] = grh;
-                                    n++;
-                                } while (n < numFrames);
-                                Single speed;
-                                txtSpeed.Text = txtSpeed.Text.Replace(".", ","); // Fix comma
-                                float.TryParse(txtSpeed.Text, out speed);
-                                i.Speed = speed;
-                            }
-                        }
+                            int grh;
+                            int.TryParse(lstFrames.Items[n].ToString(), out grh);
+                            s.Frames[n] = grh;
+                            n++;
+                        } while (n < numFrames);
+                        Single speed;
+                        txtSpeed.Text = txtSpeed.Text.Replace(".", ","); // Fix comma
+                        float.TryParse(txtSpeed.Text, out speed);
+                        s.Speed = speed;
+                    }
+                }
+                // Intentar actualizar
+                bool updated = false;
+                int maxGrhUsed = 0;
+                for (int i = 0; i < indexList.Count; i++)
+                {
+                    if (indexList[i].GrhNum == grhNumber)
+                    {
+                        updated = true;
+                        s.GrhNum = grhNumber;
+                        UpdateIndex(i, s);
                         LoadImg(imgSelected);
                         break;
                     }
                 }
+                if (updated == false)
+                {
+                    if (grhNumber> indexList.Count) {
+                        if (MaxGrh < grhNumber)
+                        {
+                            MaxGrh = grhNumber;
+                        }
+                        s.GrhNum = grhNumber;
+                        indexList.Add(s);
+                        imgSelected = s.GrhNum;
+                        LoadIndice(imgSelected);
+                    }
+                }
+                updated = false;
+                for (int i = 0; i < lstIndices.Items.Count; i++)
+                {
+                    string actual = lstIndices.Items[i].ToString();
+                    if (actual.StartsWith(grhNumber.ToString()+"\t"))
+                    {
+                        string tag = TagIndice(indexList[i]);
+                        lstIndices.Items.Add(tag);
+                        break;
+                    }
+                }
+                if (updated==false)
+                {
+                    FilterIndices();
+                }
+                MaxGrhUsed();
             }
         }
 
@@ -744,6 +808,8 @@ namespace IndeXAO
                 numFrame = 0;
             }
             if (index.NumFrames == 0)
+                return;
+            if (index.Frames.Length == 0)
                 return;
             LoadImg(index.Frames[numFrame]);
             numFrame++;
@@ -771,6 +837,23 @@ namespace IndeXAO
             lstFrames.SelectedIndex = prevIndex + 1;
         }
 
+        void MaxGrhUsed()
+        {
+            int maxGrhUsed = 0;
+            foreach (IndexStruct i in indexList)
+            {
+                if (i.NumFrames > 0)
+                {
+                    if (maxGrhUsed < i.GrhNum)
+                    {
+                        maxGrhUsed = i.GrhNum;
+                    }
+                }
+            }
+            MaxGrh = maxGrhUsed;
+            lblIndice.Text = "Indices: " + MaxGrh.ToString();
+        }
+
         private void btnSaveIND_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -789,7 +872,9 @@ namespace IndeXAO
                 return;
             }
 
-            string name = System.IO.Path.GetFileName(filepath);
+            MaxGrhUsed();
+
+                string name = System.IO.Path.GetFileName(filepath);
             if (name.EndsWith(".ind"))
             {
                 using (BinaryWriter binWriter = new BinaryWriter(File.Open(filepath, FileMode.Create)))
@@ -991,6 +1076,25 @@ namespace IndeXAO
             frmConsole.Visible = !frmConsole.Visible;
         }
 
+        private string TagIndice(IndexStruct i)
+        {
+            string tag = "";
+            if (i.NumFrames == 0)
+            {
+                tag = "[VACIO]";
+            }
+            else if (i.NumFrames == 1)
+            {
+                tag = i.ImageNum.ToString();
+            }
+            else if (i.NumFrames > 1)
+            {
+                tag = "[Animación] x" + i.NumFrames.ToString();
+            }
+            tag = i.GrhNum.ToString() + "\t" + tag;
+            return tag;
+        }
+
         void FilterIndices()
         {
             // (GRH)
@@ -1003,20 +1107,8 @@ namespace IndeXAO
                     lstIndices.Items.Clear();
                     for (int i = 0; i < indexList.Count; i++)
                     {
-                        string tag = "";
-                        if (indexList[i].NumFrames == 0)
-                        {
-                            tag = "[VACIO]";
-                        }
-                        else if (indexList[i].NumFrames == 1)
-                        {
-                            tag = indexList[i].ImageNum.ToString();
-                        }
-                        else if (indexList[i].NumFrames > 1)
-                        {
-                            tag = "[Animación] x" + indexList[i].NumFrames.ToString();
-                        }
-                        lstIndices.Items.Add(indexList[i].GrhNum.ToString() + "\t" + tag);
+                        string tag = TagIndice(indexList[i]);
+                        lstIndices.Items.Add(tag);
                     }
                     lstIndices.EndUpdate();
                     for (int i = 0; i < lstIndices.Items.Count; i++)
@@ -1109,6 +1201,14 @@ namespace IndeXAO
                     lstIndices.SelectedItem = lstIndices.Items[i];
                     break;
                 }
+            }
+        }
+
+        private void lblGraficos_Click(object sender, EventArgs e)
+        {
+            if (System.IO.Directory.Exists(ConfigINI["INIT"]["DirGraficos"]))
+            {
+                CargarDirGraficos(ConfigINI["INIT"]["DirGraficos"]);
             }
         }
     }

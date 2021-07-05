@@ -40,9 +40,9 @@ namespace IndeXAO
             this.txtIndice = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.lblIndice = new System.Windows.Forms.Label();
-            this.lblGraficos = new System.Windows.Forms.Label();
             this.btnSaveIND = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.lblGraficos = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
@@ -50,7 +50,6 @@ namespace IndeXAO
             this.txtGrhFilter = new System.Windows.Forms.TextBox();
             this.lstIndices = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.cmdAdd = new System.Windows.Forms.Button();
             this.cmdEditGrh = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
@@ -73,6 +72,7 @@ namespace IndeXAO
             this.txtSpeed = new System.Windows.Forms.TextBox();
             this.cmdRemove = new System.Windows.Forms.Button();
             this.cmdDown = new System.Windows.Forms.Button();
+            this.cmdAdd = new System.Windows.Forms.Button();
             this.cmdUp = new System.Windows.Forms.Button();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.rdoStatic = new System.Windows.Forms.RadioButton();
@@ -218,9 +218,9 @@ namespace IndeXAO
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 65.6F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34.4F));
             this.tableLayoutPanel5.Controls.Add(this.lblIndice, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.lblGraficos, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.btnSaveIND, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.button1, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblGraficos, 0, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Right;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(759, 0);
             this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(0);
@@ -234,22 +234,12 @@ namespace IndeXAO
             // lblIndice
             // 
             this.lblIndice.AutoSize = true;
-            this.lblIndice.Location = new System.Drawing.Point(2, 32);
-            this.lblIndice.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblIndice.Location = new System.Drawing.Point(2, 39);
+            this.lblIndice.Margin = new System.Windows.Forms.Padding(2, 7, 2, 0);
             this.lblIndice.Name = "lblIndice";
             this.lblIndice.Size = new System.Drawing.Size(56, 15);
             this.lblIndice.TabIndex = 24;
             this.lblIndice.Text = "Indices: 0";
-            // 
-            // lblGraficos
-            // 
-            this.lblGraficos.AutoSize = true;
-            this.lblGraficos.Location = new System.Drawing.Point(2, 0);
-            this.lblGraficos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblGraficos.Name = "lblGraficos";
-            this.lblGraficos.Size = new System.Drawing.Size(62, 15);
-            this.lblGraficos.TabIndex = 23;
-            this.lblGraficos.Text = "Graficos: 0";
             // 
             // btnSaveIND
             // 
@@ -273,6 +263,17 @@ namespace IndeXAO
             this.button1.Text = "Consola";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // lblGraficos
+            // 
+            this.lblGraficos.AutoSize = true;
+            this.lblGraficos.Location = new System.Drawing.Point(2, 7);
+            this.lblGraficos.Margin = new System.Windows.Forms.Padding(2, 7, 2, 0);
+            this.lblGraficos.Name = "lblGraficos";
+            this.lblGraficos.Size = new System.Drawing.Size(62, 15);
+            this.lblGraficos.TabIndex = 23;
+            this.lblGraficos.Text = "Graficos: 0";
+            this.lblGraficos.Click += new System.EventHandler(this.lblGraficos_Click);
             // 
             // panel2
             // 
@@ -353,7 +354,6 @@ namespace IndeXAO
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.cmdAdd, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.cmdEditGrh, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 463);
@@ -363,19 +363,6 @@ namespace IndeXAO
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(202, 30);
             this.tableLayoutPanel2.TabIndex = 24;
-            // 
-            // cmdAdd
-            // 
-            this.cmdAdd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.cmdAdd.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cmdAdd.Location = new System.Drawing.Point(104, 2);
-            this.cmdAdd.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.cmdAdd.Name = "cmdAdd";
-            this.cmdAdd.Size = new System.Drawing.Size(95, 26);
-            this.cmdAdd.TabIndex = 23;
-            this.cmdAdd.Text = "&Añadir";
-            this.cmdAdd.UseVisualStyleBackColor = false;
-            this.cmdAdd.Click += new System.EventHandler(this.cmdAdd_Click);
             // 
             // cmdEditGrh
             // 
@@ -620,6 +607,7 @@ namespace IndeXAO
             this.tableLayoutPanel8.Controls.Add(this.txtSpeed, 1, 2);
             this.tableLayoutPanel8.Controls.Add(this.cmdRemove, 1, 1);
             this.tableLayoutPanel8.Controls.Add(this.cmdDown, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.cmdAdd, 1, 0);
             this.tableLayoutPanel8.Controls.Add(this.cmdUp, 0, 0);
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableLayoutPanel8.Location = new System.Drawing.Point(0, 299);
@@ -629,6 +617,7 @@ namespace IndeXAO
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel8.Size = new System.Drawing.Size(296, 89);
             this.tableLayoutPanel8.TabIndex = 48;
             this.tableLayoutPanel8.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
@@ -639,16 +628,16 @@ namespace IndeXAO
             this.label7.AutoSize = true;
             this.label7.Dock = System.Windows.Forms.DockStyle.Right;
             this.label7.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(115, 58);
+            this.label7.Location = new System.Drawing.Point(115, 59);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(30, 31);
+            this.label7.Size = new System.Drawing.Size(30, 30);
             this.label7.TabIndex = 28;
             this.label7.Text = "Vel.";
             // 
             // txtSpeed
             // 
             this.txtSpeed.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtSpeed.Location = new System.Drawing.Point(151, 60);
+            this.txtSpeed.Location = new System.Drawing.Point(151, 61);
             this.txtSpeed.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSpeed.Name = "txtSpeed";
             this.txtSpeed.Size = new System.Drawing.Size(142, 23);
@@ -658,7 +647,7 @@ namespace IndeXAO
             // 
             this.cmdRemove.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.cmdRemove.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cmdRemove.Location = new System.Drawing.Point(151, 31);
+            this.cmdRemove.Location = new System.Drawing.Point(151, 32);
             this.cmdRemove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmdRemove.Name = "cmdRemove";
             this.cmdRemove.Size = new System.Drawing.Size(142, 25);
@@ -670,7 +659,7 @@ namespace IndeXAO
             // cmdDown
             // 
             this.cmdDown.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cmdDown.Location = new System.Drawing.Point(3, 31);
+            this.cmdDown.Location = new System.Drawing.Point(3, 32);
             this.cmdDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmdDown.Name = "cmdDown";
             this.cmdDown.Size = new System.Drawing.Size(142, 25);
@@ -679,13 +668,26 @@ namespace IndeXAO
             this.cmdDown.UseVisualStyleBackColor = true;
             this.cmdDown.Click += new System.EventHandler(this.cmdDown_Click);
             // 
+            // cmdAdd
+            // 
+            this.cmdAdd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.cmdAdd.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmdAdd.Location = new System.Drawing.Point(151, 2);
+            this.cmdAdd.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmdAdd.Name = "cmdAdd";
+            this.cmdAdd.Size = new System.Drawing.Size(142, 26);
+            this.cmdAdd.TabIndex = 32;
+            this.cmdAdd.Text = "&Añadir Grh Sel.";
+            this.cmdAdd.UseVisualStyleBackColor = false;
+            this.cmdAdd.Click += new System.EventHandler(this.cmdAdd_Click);
+            // 
             // cmdUp
             // 
             this.cmdUp.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmdUp.Location = new System.Drawing.Point(3, 2);
             this.cmdUp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmdUp.Name = "cmdUp";
-            this.cmdUp.Size = new System.Drawing.Size(142, 25);
+            this.cmdUp.Size = new System.Drawing.Size(142, 26);
             this.cmdUp.TabIndex = 30;
             this.cmdUp.Text = "&Subir";
             this.cmdUp.UseVisualStyleBackColor = true;
@@ -954,7 +956,6 @@ namespace IndeXAO
         private System.Windows.Forms.TrackBar zoomBar;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Button cmdAdd;
         private System.Windows.Forms.Button cmdEditGrh;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel7;
@@ -986,6 +987,7 @@ namespace IndeXAO
         private System.Windows.Forms.TextBox txtGrhFilter;
         private System.Windows.Forms.ListBox lstIndices;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
+        private System.Windows.Forms.Button cmdAdd;
     }
 }
 
