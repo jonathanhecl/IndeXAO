@@ -50,6 +50,7 @@ namespace IndeXAO
             this.txtGrhFilter = new System.Windows.Forms.TextBox();
             this.lstIndices = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmdNuevo = new System.Windows.Forms.Button();
             this.cmdEditGrh = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
@@ -354,6 +355,7 @@ namespace IndeXAO
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.cmdNuevo, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.cmdEditGrh, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 463);
@@ -363,6 +365,18 @@ namespace IndeXAO
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(202, 30);
             this.tableLayoutPanel2.TabIndex = 24;
+            // 
+            // cmdNuevo
+            // 
+            this.cmdNuevo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmdNuevo.Location = new System.Drawing.Point(104, 2);
+            this.cmdNuevo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmdNuevo.Name = "cmdNuevo";
+            this.cmdNuevo.Size = new System.Drawing.Size(95, 26);
+            this.cmdNuevo.TabIndex = 20;
+            this.cmdNuevo.Text = "&Nuevo";
+            this.cmdNuevo.UseVisualStyleBackColor = true;
+            this.cmdNuevo.Click += new System.EventHandler(this.cmdNuevo_Click);
             // 
             // cmdEditGrh
             // 
@@ -988,6 +1002,7 @@ namespace IndeXAO
         private System.Windows.Forms.ListBox lstIndices;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
         private System.Windows.Forms.Button cmdAdd;
+        private System.Windows.Forms.Button cmdNuevo;
     }
 }
 

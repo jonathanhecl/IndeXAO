@@ -1211,5 +1211,16 @@ namespace IndeXAO
                 CargarDirGraficos(ConfigINI["INIT"]["DirGraficos"]);
             }
         }
+
+        private void cmdNuevo_Click(object sender, EventArgs e)
+        {
+            IndexStruct newIndex = new IndexStruct();
+            MaxGrh++;
+            lblIndice.Text = "Indices: " + MaxGrh.ToString();
+            newIndex.GrhNum = MaxGrh;
+            newIndex.NumFrames = 1;
+            indexList.Add(newIndex);
+            FilterIndices();
+        }
     }
 }
